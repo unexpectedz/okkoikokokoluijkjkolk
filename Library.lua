@@ -164,6 +164,8 @@ end;
 function Library:MakeDraggable(Instance, Cutoff)
     Instance.Active = true;
 
+    local GuiInset = game:GetService('GuiService'):GetGuiInset();
+
     local Ghost = Library:Create('Frame', {
         BackgroundTransparency = 1;
         BorderSizePixel = 0;
@@ -174,11 +176,15 @@ function Library:MakeDraggable(Instance, Cutoff)
         Parent = ScreenGui;
     });
 
-    Library:Create('UIStroke', {
+    local GhostStroke = Library:Create('UIStroke', {
         Color = Library.AccentColor;
         Thickness = 1;
         ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
         Parent = Ghost;
+    });
+
+    Library:AddToRegistry(GhostStroke, {
+        Color = 'AccentColor';
     });
 
     Instance:GetPropertyChangedSignal('Size'):Connect(function()
@@ -196,8 +202,11 @@ function Library:MakeDraggable(Instance, Cutoff)
             dragStart = Input.Position
             startPos = Instance.Position
 
-Ghost.Size = Instance.Size
-            Ghost.Position = UDim2.fromOffset(Instance.AbsolutePosition.X, Instance.AbsolutePosition.Y)
+            Ghost.Size = Instance.Size
+            Ghost.Position = UDim2.fromOffset(
+                Instance.AbsolutePosition.X,
+                Instance.AbsolutePosition.Y - GuiInset.Y
+            )
             Ghost.Visible = true
         end
     end)
@@ -205,12 +214,10 @@ Ghost.Size = Instance.Size
     Library:GiveSignal(InputService.InputChanged:Connect(function(Input)
         if dragging and Input.UserInputType == Enum.UserInputType.MouseMovement then
             local delta = Input.Position - dragStart
-local ghostStart = Ghost.Position
             Ghost.Position = UDim2.fromOffset(
-                ghostStart.X.Offset + delta.X,
-                ghostStart.Y.Offset + delta.Y
+                Instance.AbsolutePosition.X - GuiInset.X + delta.X,
+                Instance.AbsolutePosition.Y - GuiInset.Y + delta.Y
             )
-            dragStart = Input.Position
         end
     end))
 
