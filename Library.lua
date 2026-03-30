@@ -163,12 +163,13 @@ end;
 
 function Library:MakeDraggable(Instance, Cutoff)
     Instance.Active = true;
+    local GuiInset = game:GetService('GuiService'):GetGuiInset();
 
     Instance.InputBegan:Connect(function(Input)
         if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-            local ClickOffset = Vector2.new(
+local ClickOffset = Vector2.new(
                 Mouse.X - Instance.AbsolutePosition.X,
-                Mouse.Y - Instance.AbsolutePosition.Y
+                Mouse.Y - Instance.AbsolutePosition.Y + GuiInset.Y
             );
 
             if ClickOffset.Y > (Cutoff or 40) then
