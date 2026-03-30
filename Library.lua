@@ -164,6 +164,27 @@ end;
 function Library:MakeDraggable(Instance, Cutoff)
     Instance.Active = true;
 
+    local Ghost = Library:Create('Frame', {
+        BackgroundTransparency = 1;
+        BorderSizePixel = 0;
+        Size = Instance.Size;
+        Position = Instance.Position;
+        ZIndex = 999;
+        Visible = false;
+        Parent = ScreenGui;
+    });
+
+    Library:Create('UIStroke', {
+        Color = Library.AccentColor;
+        Thickness = 1;
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
+        Parent = Ghost;
+    });
+
+    Instance:GetPropertyChangedSignal('Size'):Connect(function()
+        Ghost.Size = Instance.Size;
+    end);
+
     local dragging, dragStart, startPos
 
     Instance.InputBegan:Connect(function(Input)
@@ -174,26 +195,32 @@ function Library:MakeDraggable(Instance, Cutoff)
             dragging = true
             dragStart = Input.Position
             startPos = Instance.Position
+
+            Ghost.Size = Instance.Size
+            Ghost.Position = Instance.Position
+            Ghost.Visible = true
         end
     end)
 
-    Instance.InputChanged:Connect(function(Input)
+    Library:GiveSignal(InputService.InputChanged:Connect(function(Input)
         if dragging and Input.UserInputType == Enum.UserInputType.MouseMovement then
             local delta = Input.Position - dragStart
-            Instance.Position = UDim2.new(
+            Ghost.Position = UDim2.new(
                 startPos.X.Scale,
                 startPos.X.Offset + delta.X,
                 startPos.Y.Scale,
                 startPos.Y.Offset + delta.Y
             )
         end
-    end)
+    end))
 
-    Instance.InputEnded:Connect(function(Input)
-        if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+    Library:GiveSignal(InputService.InputEnded:Connect(function(Input)
+        if Input.UserInputType == Enum.UserInputType.MouseButton1 and dragging then
             dragging = false
+            Ghost.Visible = false
+            Instance.Position = Ghost.Position
         end
-    end)
+    end))
 end;
 function Library:AddToolTip(InfoStr, HoverInstance)
     local X, Y = Library:GetTextBounds(InfoStr, Library.Font, 14);
