@@ -166,13 +166,19 @@ function Library:MakeDraggable(Instance, Cutoff)
 
 local Ghost = Library:Create('Frame', {
         BackgroundTransparency = 1;
-        BorderColor3 = Library.AccentColor;
-        BorderSizePixel = 2;
+        BorderSizePixel = 0;
         Size = Instance.Size;
         Position = Instance.Position;
         ZIndex = 999;
         Visible = false;
         Parent = ScreenGui;
+    });
+
+    Library:Create('UIStroke', {
+        Color = Library.AccentColor;
+        Thickness = 2;
+        LineJoinMode = Enum.LineJoinMode.Miter;
+        Parent = Ghost;
     });
 
     Library:AddToRegistry(Ghost, {
@@ -200,20 +206,12 @@ local Ghost = Library:Create('Frame', {
             Ghost.Visible = true;
 
 while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
-                local NewPos = UDim2.new(
-                    0,
+                Ghost.Position = UDim2.fromOffset(
                     Mouse.X - ObjPos.X,
-                    0,
                     Mouse.Y - ObjPos.Y
                 );
-
-                Ghost.Position = NewPos;
                 RenderStepped:Wait();
             end;
-
-            Ghost.Visible = false;
-            Instance.Position = Ghost.Position;
-        end;
     end)
 end;
 
