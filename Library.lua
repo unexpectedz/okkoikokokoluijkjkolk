@@ -227,21 +227,18 @@ function Library:MakeDraggable(Instance, Cutoff)
         end
     end))
 
-    Library:GiveSignal(InputService.InputEnded:Connect(function(Input)
+Library:GiveSignal(InputService.InputEnded:Connect(function(Input)
         if Input.UserInputType == Enum.UserInputType.MouseButton1 and dragging then
             dragging = false
             Ghost.Visible = false
 
-            -- Ghost is a child of ScreenGui, its Position offsets are in ScreenGui space
-            -- Instance.Parent might be nested, so we need to find offset relative to parent
             local inset = GuiService:GetGuiInset()
             local targetX = Ghost.Position.X.Offset
             local targetY = Ghost.Position.Y.Offset
 
             if Instance.Parent and Instance.Parent ~= ScreenGui then
                 local parentAbsPos = Instance.Parent.AbsolutePosition
-                -- AbsolutePosition of parent includes inset, ghost pos does not
-                targetX = targetX - parentAbsPos.X + inset.X
+                targetX = targetX - parentAbsPos.X
                 targetY = targetY - parentAbsPos.Y + inset.Y
             end
 
