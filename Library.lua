@@ -250,26 +250,34 @@ end
 function Library:OnHighlight(HighlightInstance, Instance, Properties, PropertiesDefault)
     HighlightInstance.MouseEnter:Connect(function()
         local Reg = Library.RegistryMap[Instance];
+        local TweenProps = {};
 
         for Property, ColorIdx in next, Properties do
-            Instance[Property] = Library[ColorIdx] or ColorIdx;
+            local Color = Library[ColorIdx] or ColorIdx;
+            TweenProps[Property] = Color;
 
             if Reg and Reg.Properties[Property] then
                 Reg.Properties[Property] = ColorIdx;
             end;
         end;
+
+        TweenService:Create(Instance, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), TweenProps):Play();
     end)
 
     HighlightInstance.MouseLeave:Connect(function()
         local Reg = Library.RegistryMap[Instance];
+        local TweenProps = {};
 
         for Property, ColorIdx in next, PropertiesDefault do
-            Instance[Property] = Library[ColorIdx] or ColorIdx;
+            local Color = Library[ColorIdx] or ColorIdx;
+            TweenProps[Property] = Color;
 
             if Reg and Reg.Properties[Property] then
                 Reg.Properties[Property] = ColorIdx;
             end;
         end;
+
+        TweenService:Create(Instance, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), TweenProps):Play();
     end)
 end;
 
@@ -936,6 +944,18 @@ do
             end;
         end);
 
+DisplayFrame.MouseEnter:Connect(function()
+            TweenService:Create(DisplayFrame, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                BorderColor3 = Library.AccentColor
+            }):Play();
+        end);
+
+        DisplayFrame.MouseLeave:Connect(function()
+            TweenService:Create(DisplayFrame, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                BorderColor3 = Library:GetDarkerColor(ColorPicker.Value)
+            }):Play();
+        end);
+
         DisplayFrame.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame() then
                 if PickerFrameOuter.Visible then
@@ -1226,6 +1246,18 @@ do
         end
 
         local Picking = false;
+
+PickOuter.MouseEnter:Connect(function()
+            TweenService:Create(PickOuter, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                BorderColor3 = Library.AccentColor
+            }):Play();
+        end);
+
+        PickOuter.MouseLeave:Connect(function()
+            TweenService:Create(PickOuter, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                BorderColor3 = Color3.new(0, 0, 0)
+            }):Play();
+        end);
 
         PickOuter.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame() then
@@ -3112,11 +3144,11 @@ local Blocker = Library:Create('Frame', {
             BackgroundColor3 = 'MainColor';
         });
 
-        local TabAccentLine = Library:Create('Frame', {
+local TabAccentLine = Library:Create('Frame', {
             BackgroundColor3 = Library.AccentColor;
             BorderSizePixel = 0;
             Position = UDim2.new(0, 0, 0, 0);
-            Size = UDim2.new(1, 0, 0, 2);
+            Size = UDim2.new(1, 0, 0, 1);
             BackgroundTransparency = 1;
             ZIndex = 4;
             Parent = TabButton;
@@ -3190,10 +3222,19 @@ function Tab:ShowTab()
             end;
 
             Blocker.BackgroundTransparency = 0;
-            TabAccentLine.BackgroundTransparency = 0;
             TabButton.BackgroundColor3 = Library.MainColor;
             Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'MainColor';
             TabFrame.Visible = true;
+            TabFrame.Position = UDim2.new(-0.04, 0, 0, 0);
+            TabAccentLine.BackgroundTransparency = 1;
+
+            TweenService:Create(TabAccentLine, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                BackgroundTransparency = 0
+            }):Play();
+
+            TweenService:Create(TabFrame, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Position = UDim2.new(0, 0, 0, 0)
+            }):Play();
         end;
 
         function Tab:HideTab()
@@ -3202,6 +3243,7 @@ function Tab:ShowTab()
             TabButton.BackgroundColor3 = Library.BackgroundColor;
             Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'BackgroundColor';
             TabFrame.Visible = false;
+            TabFrame.Position = UDim2.new(0, 0, 0, 0);
         end;
 
         function Tab:SetLayoutOrder(Position)
@@ -3420,25 +3462,39 @@ local GroupboxLabel = Library:CreateLabel({
                     Parent = Container;
                 });
 
-                function Tab:Show()
+function Tab:Show()
                     for _, Tab in next, Tabbox.Tabs do
                         Tab:Hide();
                     end;
 
                     Container.Visible = true;
+                    Container.Position = UDim2.new(0, 4, 0, 24);
+                    Container.GroupTransparency = 1 -- doesnt exist, use descendants below
+
                     Block.Visible = true;
 
-                    Button.BackgroundColor3 = Library.BackgroundColor;
+                    TweenService:Create(Button, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                        BackgroundColor3 = Library.BackgroundColor
+                    }):Play();
+
                     Library.RegistryMap[Button].Properties.BackgroundColor3 = 'BackgroundColor';
+
+                    TweenService:Create(Container, TweenInfo.new(0.13, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                        Position = UDim2.new(0, 4, 0, 20)
+                    }):Play();
 
                     Tab:Resize();
                 end;
 
                 function Tab:Hide()
                     Container.Visible = false;
+                    Container.Position = UDim2.new(0, 4, 0, 20);
                     Block.Visible = false;
 
-                    Button.BackgroundColor3 = Library.MainColor;
+                    TweenService:Create(Button, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                        BackgroundColor3 = Library.MainColor
+                    }):Play();
+
                     Library.RegistryMap[Button].Properties.BackgroundColor3 = 'MainColor';
                 end;
 
