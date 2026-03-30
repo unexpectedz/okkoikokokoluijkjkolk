@@ -1626,7 +1626,7 @@ do
             Button:AddTooltip(Button.Tooltip)
         end
 
-Groupbox:AddBlank(3);
+        Groupbox:AddBlank(5);
         Groupbox:Resize();
 
         return Button;
@@ -1980,7 +1980,7 @@ Groupbox:AddBlank(3);
         end
 
         Toggle:Display();
-        Groupbox:AddBlank(Info.BlankSize or 4);
+        Groupbox:AddBlank(Info.BlankSize or 5 + 2);
         Groupbox:Resize();
 
         Toggle.TextLabel = ToggleLabel;
@@ -2031,7 +2031,7 @@ Groupbox:AddBlank(3);
         local SliderOuter = Library:Create('Frame', {
             BackgroundColor3 = Color3.new(0, 0, 0);
             BorderColor3 = Color3.new(0, 0, 0);
-            Size = UDim2.new(1, -4, 0, 10)
+            Size = UDim2.new(1, -4, 0, 10);
             ZIndex = 5;
             Parent = Container;
         });
@@ -2207,7 +2207,7 @@ local Fill = Library:Create('Frame', {
         end);
 
         Slider:Display();
-        Groupbox:AddBlank(Info.BlankSize or 4);
+        Groupbox:AddBlank(Info.BlankSize or 6);
         Groupbox:Resize();
 
         Options[Idx] = Slider;
@@ -2654,7 +2654,7 @@ local Fill = Library:Create('Frame', {
             Dropdown:Display();
         end
 
-Groupbox:AddBlank(Info.BlankSize or 3);
+        Groupbox:AddBlank(Info.BlankSize or 5);
         Groupbox:Resize();
 
         Options[Idx] = Dropdown;
