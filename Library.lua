@@ -202,21 +202,24 @@ function Library:MakeDraggable(Instance, Cutoff)
             dragStart = Input.Position
             startPos = Instance.Position
 
-            Ghost.Size = Instance.Size
+Ghost.Size = Instance.Size
             Ghost.Position = UDim2.fromOffset(
                 Instance.AbsolutePosition.X,
                 Instance.AbsolutePosition.Y - GuiInset.Y
             )
+            ghostStart = Ghost.Position
             Ghost.Visible = true
         end
     end)
+
+local ghostStart
 
     Library:GiveSignal(InputService.InputChanged:Connect(function(Input)
         if dragging and Input.UserInputType == Enum.UserInputType.MouseMovement then
             local delta = Input.Position - dragStart
             Ghost.Position = UDim2.fromOffset(
-                Instance.AbsolutePosition.X - GuiInset.X + delta.X,
-                Instance.AbsolutePosition.Y - GuiInset.Y + delta.Y
+                ghostStart.X.Offset + delta.X,
+                ghostStart.Y.Offset + delta.Y
             )
         end
     end))
