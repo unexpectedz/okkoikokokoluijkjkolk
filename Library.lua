@@ -234,19 +234,13 @@ Library:GiveSignal(InputService.InputEnded:Connect(function(Input)
 
             local inset = GuiService:GetGuiInset()
             local targetX = Ghost.Position.X.Offset
-            local targetY = Ghost.Position.Y.Offset
+            local targetY = Ghost.Position.Y.Offset - inset.Y
 
             if Instance.Parent and Instance.Parent ~= ScreenGui then
                 local parentAbsPos = Instance.Parent.AbsolutePosition
                 targetX = targetX - parentAbsPos.X
-                targetY = targetY - parentAbsPos.Y + inset.Y
+                targetY = targetY - (parentAbsPos.Y - inset.Y)
             end
-
-print("Ghost pos:", Ghost.Position.X.Offset, Ghost.Position.Y.Offset)
-print("Parent AbsPos:", Instance.Parent.AbsolutePosition.X, Instance.Parent.AbsolutePosition.Y)
-print("Inset:", GuiService:GetGuiInset())
-print("Setting position to:", targetX, targetY)
-print("Instance AbsPos after set:", Instance.AbsolutePosition.X, Instance.AbsolutePosition.Y)
 
             Instance.Position = UDim2.fromOffset(targetX, targetY)
         end
