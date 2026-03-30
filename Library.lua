@@ -2054,7 +2054,7 @@ do
             BorderColor3 = 'OutlineColor';
         });
 
-        local Fill = Library:Create('Frame', {
+local Fill = Library:Create('Frame', {
             BackgroundColor3 = Library.AccentColor;
             BorderColor3 = Library.AccentColorDark;
             Size = UDim2.new(0, 0, 1, 0);
@@ -2062,22 +2062,34 @@ do
             Parent = SliderInner;
         });
 
-Library:Create('UIGradient', {
-            Color = ColorSequence.new({
-                ColorSequenceKeypoint.new(0, Color3.fromHSV(
-                    select(1, Color3.toHSV(Library.AccentColor)),
-                    math.max(0, select(2, Color3.toHSV(Library.AccentColor)) - 0.15),
-                    math.min(1, select(3, Color3.toHSV(Library.AccentColor)) + 0.15)
-                )),
-                ColorSequenceKeypoint.new(1, Library.AccentColor),
-            });
+        local FillGradient = Library:Create('UIGradient', {
             Rotation = 90;
             Parent = Fill;
         });
 
+        local function UpdateFillGradient()
+            local h, s, v = Color3.toHSV(Library.AccentColor)
+            FillGradient.Color = ColorSequence.new({
+                ColorSequenceKeypoint.new(0, Color3.fromHSV(h, math.max(0, s - 0.15), math.min(1, v + 0.15))),
+                ColorSequenceKeypoint.new(1, Library.AccentColor),
+            })
+        end
+
+        UpdateFillGradient()
+
         Library:AddToRegistry(Fill, {
             BackgroundColor3 = 'AccentColor';
             BorderColor3 = 'AccentColorDark';
+        });
+
+        Library:AddToRegistry(FillGradient, {
+            Color = function()
+                local h, s, v = Color3.toHSV(Library.AccentColor)
+                return ColorSequence.new({
+                    ColorSequenceKeypoint.new(0, Color3.fromHSV(h, math.max(0, s - 0.15), math.min(1, v + 0.15))),
+                    ColorSequenceKeypoint.new(1, Library.AccentColor),
+                })
+            end
         });
 
         local HideBorderRight = Library:Create('Frame', {
