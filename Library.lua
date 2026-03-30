@@ -191,7 +191,7 @@ function Library:MakeDraggable(Instance, Cutoff)
         Ghost.Size = Instance.Size;
     end);
 
-    local dragging, dragStart, ghostStart
+    local dragging, dragInput, dragStart, startPos
 
     Instance.InputBegan:Connect(function(Input)
         if Input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -201,13 +201,13 @@ function Library:MakeDraggable(Instance, Cutoff)
 
             dragging = true
             dragStart = Vector2.new(Input.Position.X, Input.Position.Y)
+            startPos = Instance.AbsolutePosition
 
             Ghost.Size = Instance.Size
             Ghost.Position = UDim2.fromOffset(
                 Instance.AbsolutePosition.X,
                 Instance.AbsolutePosition.Y - GuiInset.Y
             )
-            ghostStart = Ghost.Position
             Ghost.Visible = true
         end
     end)
@@ -216,8 +216,8 @@ function Library:MakeDraggable(Instance, Cutoff)
         if dragging and Input.UserInputType == Enum.UserInputType.MouseMovement then
             local delta = Vector2.new(Input.Position.X - dragStart.X, Input.Position.Y - dragStart.Y)
             Ghost.Position = UDim2.fromOffset(
-                ghostStart.X.Offset + delta.X,
-                ghostStart.Y.Offset + delta.Y
+                startPos.X + delta.X,
+                startPos.Y - GuiInset.Y + delta.Y
             )
         end
     end))
@@ -227,18 +227,23 @@ function Library:MakeDraggable(Instance, Cutoff)
             dragging = false
             Ghost.Visible = false
 
-            local parentInset = Vector2.new(0, 0)
-            if Instance.Parent and Instance.Parent ~= ScreenGui then
-                parentInset = Instance.Parent.AbsolutePosition - Vector2.new(0, GuiInset.Y)
-            end
+            local ghostAbsX = Ghost.Position.X.Offset
+            local ghostAbsY = Ghost.Position.Y.Offset
 
-            Instance.Position = UDim2.fromOffset(
-                Ghost.Position.X.Offset - parentInset.X,
-                Ghost.Position.Y.Offset - parentInset.Y
-            )
+            if Instance.Parent and Instance.Parent ~= ScreenGui then
+                local parentPos = Instance.Parent.AbsolutePosition
+                Instance.Position = UDim2.fromOffset(
+                    ghostAbsX - parentPos.X,
+                    ghostAbsY - (parentPos.Y - GuiInset.Y)
+                )
+            else
+                Instance.Position = UDim2.fromOffset(ghostAbsX, ghostAbsY)
+            end
         end
     end))
-end;function Library:AddToolTip(InfoStr, HoverInstance)
+end;
+
+function Library:AddToolTip(InfoStr, HoverInstance)
     local X, Y = Library:GetTextBounds(InfoStr, Library.Font, 14);
     local Tooltip = Library:Create('Frame', {
         BackgroundColor3 = Library.MainColor,
