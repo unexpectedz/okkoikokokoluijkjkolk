@@ -213,8 +213,14 @@ while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
                 RenderStepped:Wait();
             end;
 
-            Ghost.Visible = false;
-            Instance.Position = Ghost.Position;
+Ghost.Visible = false;
+            local AbsParentPos = Instance.Parent and Instance.Parent.AbsolutePosition or Vector2.new(0, 0);
+            Instance.Position = UDim2.new(
+                0,
+                Ghost.Position.X.Offset - AbsParentPos.X,
+                0,
+                Ghost.Position.Y.Offset - AbsParentPos.Y
+            );
         end;
     end)
 end;
