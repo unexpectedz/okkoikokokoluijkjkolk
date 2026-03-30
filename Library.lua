@@ -165,7 +165,8 @@ function Library:MakeDraggable(Instance, Cutoff)
     Instance.Active = true;
 
     local Ghost = Library:Create('Frame', {
-        BackgroundTransparency = 1;
+        BackgroundTransparency = 0.92;
+        BackgroundColor3 = Library.AccentColor;
         BorderColor3 = Library.AccentColor;
         BorderSizePixel = 1;
         Size = Instance.Size;
@@ -175,13 +176,9 @@ function Library:MakeDraggable(Instance, Cutoff)
         Parent = ScreenGui;
     });
 
-    Library:Create('UICorner', {
-        CornerRadius = UDim.new(0, 2);
-        Parent = Ghost;
-    });
-
     Library:AddToRegistry(Ghost, {
         BorderColor3 = 'AccentColor';
+        BackgroundColor3 = 'AccentColor';
     });
 
     Instance:GetPropertyChangedSignal('Size'):Connect(function()
@@ -212,15 +209,11 @@ function Library:MakeDraggable(Instance, Cutoff)
                 );
 
                 Ghost.Position = NewPos;
-
                 RenderStepped:Wait();
             end;
 
             Ghost.Visible = false;
-
-            TweenService:Create(Instance, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                Position = Ghost.Position
-            }):Play();
+            Instance.Position = Ghost.Position;
         end;
     end)
 end;
@@ -3016,7 +3009,7 @@ function Library:CreateWindow(...)
     if type(Config.MenuFadeTime) ~= 'number' then Config.MenuFadeTime = 0.2 end
 
     if typeof(Config.Position) ~= 'UDim2' then Config.Position = UDim2.fromOffset(175, 50) end
-    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(640, 520) end
+    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(500, 650) end
 
     if Config.Center then
         Config.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -3208,7 +3201,7 @@ local LeftSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
             Position = UDim2.new(0, 8 - 1, 0, 8 - 1);
-            Size = UDim2.new(0.5, -12 + 2, 0, 400 + 2);
+            Size = UDim2.new(0.5, -12 + 2, 0, 535 + 2);
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = '';
             TopImage = '';
@@ -3221,7 +3214,7 @@ local LeftSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
             Position = UDim2.new(0.5, 4 + 1, 0, 8 - 1);
-            Size = UDim2.new(0.5, -12 + 2, 0, 400 + 2);
+            Size = UDim2.new(0.5, -12 + 2, 0, 535 + 2);
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = '';
             TopImage = '';
