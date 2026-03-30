@@ -165,26 +165,22 @@ function Library:MakeDraggable(Instance, Cutoff)
     Instance.Active = true;
 
 local Ghost = Library:Create('Frame', {
-        BackgroundTransparency = 1;
-        BorderSizePixel = 0;
-        Size = Instance.Size;
-        Position = Instance.Position;
-        ZIndex = 999;
-        Visible = false;
-        Parent = ScreenGui;
-    });
+            BackgroundTransparency = 1;
+            BorderSizePixel = 0;
+            Size = Instance.Size;
+            Position = Instance.Position;
+            ZIndex = 999;
+            Visible = false;
+            Parent = ScreenGui;
+        });
 
-    Library:Create('UIStroke', {
-        Color = Library.AccentColor;
-        Thickness = 2;
-        LineJoinMode = Enum.LineJoinMode.Miter;
-        Parent = Ghost;
-    });
-
-    Library:AddToRegistry(Ghost, {
-        BorderColor3 = 'AccentColor';
-        BackgroundColor3 = 'AccentColor';
-    });
+        Library:Create('UIStroke', {
+            Color = Library.AccentColor;
+            Thickness = 1;
+            ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
+            Parent = Ghost;
+        });
+Library:AddToRegistry(Ghost, {});
 
     Instance:GetPropertyChangedSignal('Size'):Connect(function()
         Ghost.Size = Instance.Size;
@@ -206,12 +202,20 @@ local Ghost = Library:Create('Frame', {
             Ghost.Visible = true;
 
 while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
-                Ghost.Position = UDim2.fromOffset(
+                local NewPos = UDim2.new(
+                    0,
                     Mouse.X - ObjPos.X,
+                    0,
                     Mouse.Y - ObjPos.Y
                 );
+
+                Ghost.Position = NewPos;
                 RenderStepped:Wait();
             end;
+
+            Ghost.Visible = false;
+            Instance.Position = Ghost.Position;
+        end;
     end)
 end;
 
