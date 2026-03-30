@@ -163,27 +163,36 @@ end;
 
 function Library:MakeDraggable(Instance, Cutoff)
     Instance.Active = true;
-    local GuiInset = game:GetService('GuiService'):GetGuiInset();
+
+    local dragging, dragStart, startPos
 
     Instance.InputBegan:Connect(function(Input)
         if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-local ClickOffset = Vector2.new(
-                Mouse.X - Instance.AbsolutePosition.X,
-                Mouse.Y - Instance.AbsolutePosition.Y + GuiInset.Y
-            );
+            if Input.Position.Y - Instance.AbsolutePosition.Y > (Cutoff or 40) then
+                return
+            end
+            dragging = true
+            dragStart = Input.Position
+            startPos = Instance.Position
+        end
+    end)
 
-            if ClickOffset.Y > (Cutoff or 40) then
-                return;
-            end;
+    Instance.InputChanged:Connect(function(Input)
+        if dragging and Input.UserInputType == Enum.UserInputType.MouseMovement then
+            local delta = Input.Position - dragStart
+            Instance.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
 
-            while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
-                Instance.Position = UDim2.fromOffset(
-                    Mouse.X - ClickOffset.X,
-                    Mouse.Y - ClickOffset.Y
-                );
-                RenderStepped:Wait();
-            end;
-        end;
+    Instance.InputEnded:Connect(function(Input)
+        if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
     end)
 end;
 function Library:AddToolTip(InfoStr, HoverInstance)
