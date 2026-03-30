@@ -164,71 +164,24 @@ end;
 function Library:MakeDraggable(Instance, Cutoff)
     Instance.Active = true;
 
-    local Ghost = Library:Create('Frame', {
-        BackgroundTransparency = 1;
-        BorderSizePixel = 0;
-        Size = Instance.Size;
-        Position = Instance.Position;
-        ZIndex = 999;
-        Visible = false;
-        Parent = ScreenGui;
-    });
-
-    Library:Create('UIStroke', {
-        Color = Library.AccentColor;
-        Thickness = 1;
-        ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
-        Parent = Ghost;
-    });
-
-    Library:AddToRegistry(Ghost, {});
-
-    Instance:GetPropertyChangedSignal('Size'):Connect(function()
-        Ghost.Size = Instance.Size;
-    end);
-
     Instance.InputBegan:Connect(function(Input)
         if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-            local DragStartMouse = Vector2.new(Mouse.X, Mouse.Y);
-            local DragStartPos = Instance.AbsolutePosition;
-
             local ClickOffset = Vector2.new(
-                Mouse.X - DragStartPos.X,
-                Mouse.Y - DragStartPos.Y
+                Mouse.X - Instance.AbsolutePosition.X,
+                Mouse.Y - Instance.AbsolutePosition.Y
             );
 
             if ClickOffset.Y > (Cutoff or 40) then
                 return;
             end;
 
-            Ghost.Size = Instance.Size;
-            Ghost.Position = UDim2.fromOffset(DragStartPos.X, DragStartPos.Y);
-            Ghost.Visible = true;
-
             while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
-                local Delta = Vector2.new(Mouse.X - DragStartMouse.X, Mouse.Y - DragStartMouse.Y);
-
-                Ghost.Position = UDim2.fromOffset(
-                    DragStartPos.X + Delta.X,
-                    DragStartPos.Y + Delta.Y
+                Instance.Position = UDim2.fromOffset(
+                    Mouse.X - ClickOffset.X,
+                    Mouse.Y - ClickOffset.Y
                 );
-
                 RenderStepped:Wait();
             end;
-
-            Ghost.Visible = false;
-
-            local FinalAbsPos = Vector2.new(
-                Ghost.Position.X.Offset,
-                Ghost.Position.Y.Offset
-            );
-
-            local ParentAbsPos = Instance.Parent and Instance.Parent.AbsolutePosition or Vector2.new(0, 0);
-
-            Instance.Position = UDim2.fromOffset(
-                FinalAbsPos.X - ParentAbsPos.X,
-                FinalAbsPos.Y - ParentAbsPos.Y
-            );
         end;
     end)
 end;
