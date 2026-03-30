@@ -164,6 +164,30 @@ end;
 function Library:MakeDraggable(Instance, Cutoff)
     Instance.Active = true;
 
+    local Ghost = Library:Create('Frame', {
+        BackgroundTransparency = 1;
+        BorderColor3 = Library.AccentColor;
+        BorderSizePixel = 1;
+        Size = Instance.Size;
+        Position = Instance.Position;
+        ZIndex = 999;
+        Visible = false;
+        Parent = ScreenGui;
+    });
+
+    Library:Create('UICorner', {
+        CornerRadius = UDim.new(0, 2);
+        Parent = Ghost;
+    });
+
+    Library:AddToRegistry(Ghost, {
+        BorderColor3 = 'AccentColor';
+    });
+
+    Instance:GetPropertyChangedSignal('Size'):Connect(function()
+        Ghost.Size = Instance.Size;
+    end);
+
     Instance.InputBegan:Connect(function(Input)
         if Input.UserInputType == Enum.UserInputType.MouseButton1 then
             local ObjPos = Vector2.new(
@@ -175,16 +199,28 @@ function Library:MakeDraggable(Instance, Cutoff)
                 return;
             end;
 
+            Ghost.Size = Instance.Size;
+            Ghost.Position = Instance.Position;
+            Ghost.Visible = true;
+
             while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
-                Instance.Position = UDim2.new(
+                local NewPos = UDim2.new(
                     0,
                     Mouse.X - ObjPos.X + (Instance.Size.X.Offset * Instance.AnchorPoint.X),
                     0,
                     Mouse.Y - ObjPos.Y + (Instance.Size.Y.Offset * Instance.AnchorPoint.Y)
                 );
 
+                Ghost.Position = NewPos;
+
                 RenderStepped:Wait();
             end;
+
+            Ghost.Visible = false;
+
+            TweenService:Create(Instance, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Position = Ghost.Position
+            }):Play();
         end;
     end)
 end;
@@ -2980,7 +3016,7 @@ function Library:CreateWindow(...)
     if type(Config.MenuFadeTime) ~= 'number' then Config.MenuFadeTime = 0.2 end
 
     if typeof(Config.Position) ~= 'UDim2' then Config.Position = UDim2.fromOffset(175, 50) end
-    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(590, 630) end
+    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(640, 520) end
 
     if Config.Center then
         Config.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -3168,11 +3204,11 @@ local TabAccentLine = Library:Create('Frame', {
             Parent = TabContainer;
         });
 
-        local LeftSide = Library:Create('ScrollingFrame', {
+local LeftSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
             Position = UDim2.new(0, 8 - 1, 0, 8 - 1);
-            Size = UDim2.new(0.5, -12 + 2, 0, 507 + 2);
+            Size = UDim2.new(0.5, -12 + 2, 0, 400 + 2);
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = '';
             TopImage = '';
@@ -3185,7 +3221,7 @@ local TabAccentLine = Library:Create('Frame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
             Position = UDim2.new(0.5, 4 + 1, 0, 8 - 1);
-            Size = UDim2.new(0.5, -12 + 2, 0, 507 + 2);
+            Size = UDim2.new(0.5, -12 + 2, 0, 400 + 2);
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = '';
             TopImage = '';
