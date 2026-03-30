@@ -148,7 +148,7 @@ function Library:CreateLabel(Properties, IsHud)
         BackgroundTransparency = 1;
         Font = Library.Font;
         TextColor3 = Library.FontColor;
-        TextSize = 16;
+        TextSize = 13;
         TextStrokeTransparency = 0;
     });
 
@@ -1626,7 +1626,7 @@ do
             Button:AddTooltip(Button.Tooltip)
         end
 
-        Groupbox:AddBlank(5);
+Groupbox:AddBlank(3);
         Groupbox:Resize();
 
         return Button;
@@ -1980,7 +1980,7 @@ do
         end
 
         Toggle:Display();
-        Groupbox:AddBlank(Info.BlankSize or 5 + 2);
+        Groupbox:AddBlank(Info.BlankSize or 4);
         Groupbox:Resize();
 
         Toggle.TextLabel = ToggleLabel;
@@ -2031,7 +2031,7 @@ do
         local SliderOuter = Library:Create('Frame', {
             BackgroundColor3 = Color3.new(0, 0, 0);
             BorderColor3 = Color3.new(0, 0, 0);
-            Size = UDim2.new(1, -4, 0, 13);
+            Size = UDim2.new(1, -4, 0, 10)
             ZIndex = 5;
             Parent = Container;
         });
@@ -2207,7 +2207,7 @@ local Fill = Library:Create('Frame', {
         end);
 
         Slider:Display();
-        Groupbox:AddBlank(Info.BlankSize or 6);
+        Groupbox:AddBlank(Info.BlankSize or 4);
         Groupbox:Resize();
 
         Options[Idx] = Slider;
@@ -2654,7 +2654,7 @@ local Fill = Library:Create('Frame', {
             Dropdown:Display();
         end
 
-        Groupbox:AddBlank(Info.BlankSize or 5);
+Groupbox:AddBlank(Info.BlankSize or 3);
         Groupbox:Resize();
 
         Options[Idx] = Dropdown;
@@ -3015,7 +3015,7 @@ function Library:CreateWindow(...)
     if type(Config.MenuFadeTime) ~= 'number' then Config.MenuFadeTime = 0.2 end
 
     if typeof(Config.Position) ~= 'UDim2' then Config.Position = UDim2.fromOffset(175, 50) end
-    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(500, 650) end
+    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(590, 650) end
 
     if Config.Center then
         Config.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -3332,7 +3332,7 @@ function Tab:ShowTab()
 local GroupboxLabel = Library:CreateLabel({
                 Size = UDim2.new(1, 0, 0, 18);
                 Position = UDim2.new(0, 0, 0, 2);
-                TextSize = 14;
+                TextSize = 13;
                 Text = Info.Name;
                 TextXAlignment = Enum.TextXAlignment.Center;
                 ZIndex = 5;
