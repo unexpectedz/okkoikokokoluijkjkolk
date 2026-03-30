@@ -164,7 +164,7 @@ end;
 function Library:MakeDraggable(Instance, Cutoff)
     Instance.Active = true;
 
-    local GuiInset = game:GetService('GuiService'):GetGuiInset();
+    local GuiService = game:GetService('GuiService');
 
     local Ghost = Library:Create('Frame', {
         BackgroundTransparency = 1;
@@ -191,7 +191,9 @@ function Library:MakeDraggable(Instance, Cutoff)
         Ghost.Size = Instance.Size;
     end);
 
-    local dragging, dragInput, dragStart, startPos
+    local dragging = false
+    local mouseStartPos = Vector2.zero
+    local frameStartPos = Vector2.zero
 
     Instance.InputBegan:Connect(function(Input)
         if Input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -200,24 +202,27 @@ function Library:MakeDraggable(Instance, Cutoff)
             end
 
             dragging = true
-            dragStart = Vector2.new(Input.Position.X, Input.Position.Y)
-            startPos = Instance.AbsolutePosition
+
+            -- Input.Position is in screen coords (no inset)
+            -- AbsolutePosition is in screen coords (no inset, starts from top of screen)
+            mouseStartPos = Vector2.new(Input.Position.X, Input.Position.Y)
+            frameStartPos = Vector2.new(Instance.AbsolutePosition.X, Instance.AbsolutePosition.Y)
 
             Ghost.Size = Instance.Size
-            Ghost.Position = UDim2.fromOffset(
-                Instance.AbsolutePosition.X,
-                Instance.AbsolutePosition.Y - GuiInset.Y
-            )
+            Ghost.Position = UDim2.fromOffset(frameStartPos.X, frameStartPos.Y)
             Ghost.Visible = true
         end
     end)
 
     Library:GiveSignal(InputService.InputChanged:Connect(function(Input)
         if dragging and Input.UserInputType == Enum.UserInputType.MouseMovement then
-            local delta = Vector2.new(Input.Position.X - dragStart.X, Input.Position.Y - dragStart.Y)
+            local delta = Vector2.new(
+                Input.Position.X - mouseStartPos.X,
+                Input.Position.Y - mouseStartPos.Y
+            )
             Ghost.Position = UDim2.fromOffset(
-                startPos.X + delta.X,
-                startPos.Y - GuiInset.Y + delta.Y
+                frameStartPos.X + delta.X,
+                frameStartPos.Y + delta.Y
             )
         end
     end))
@@ -227,22 +232,23 @@ function Library:MakeDraggable(Instance, Cutoff)
             dragging = false
             Ghost.Visible = false
 
-            local ghostAbsX = Ghost.Position.X.Offset
-            local ghostAbsY = Ghost.Position.Y.Offset
+            -- Ghost is a child of ScreenGui, its Position offsets are in ScreenGui space
+            -- Instance.Parent might be nested, so we need to find offset relative to parent
+            local inset = GuiService:GetGuiInset()
+            local targetX = Ghost.Position.X.Offset
+            local targetY = Ghost.Position.Y.Offset
 
             if Instance.Parent and Instance.Parent ~= ScreenGui then
-                local parentPos = Instance.Parent.AbsolutePosition
-                Instance.Position = UDim2.fromOffset(
-                    ghostAbsX - parentPos.X,
-                    ghostAbsY - (parentPos.Y - GuiInset.Y)
-                )
-            else
-                Instance.Position = UDim2.fromOffset(ghostAbsX, ghostAbsY)
+                local parentAbsPos = Instance.Parent.AbsolutePosition
+                -- AbsolutePosition of parent includes inset, ghost pos does not
+                targetX = targetX - parentAbsPos.X + inset.X
+                targetY = targetY - parentAbsPos.Y + inset.Y
             end
+
+            Instance.Position = UDim2.fromOffset(targetX, targetY)
         end
     end))
 end;
-
 function Library:AddToolTip(InfoStr, HoverInstance)
     local X, Y = Library:GetTextBounds(InfoStr, Library.Font, 14);
     local Tooltip = Library:Create('Frame', {
