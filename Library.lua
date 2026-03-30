@@ -3467,9 +3467,8 @@ function Tab:Show()
                         Tab:Hide();
                     end;
 
-                    Container.Visible = true;
+Container.Visible = true;
                     Container.Position = UDim2.new(0, 4, 0, 24);
-                    Container.GroupTransparency = 1 -- doesnt exist, use descendants below
 
                     Block.Visible = true;
 
