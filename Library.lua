@@ -164,36 +164,15 @@ end;
 function Library:MakeDraggable(Instance, Cutoff)
     Instance.Active = true;
 
-    local GuiService = game:GetService('GuiService');
-
-    local Ghost = Library:Create('Frame', {
-        BackgroundTransparency = 1;
-        BorderSizePixel = 0;
-        Size = Instance.Size;
-        Position = Instance.Position;
-        ZIndex = 999;
-        Visible = false;
-        Parent = ScreenGui;
-    });
-
-    local GhostStroke = Library:Create('UIStroke', {
-        Color = Library.AccentColor;
-        Thickness = 1;
-        ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
-        Parent = Ghost;
-    });
-
-    Library:AddToRegistry(GhostStroke, {
-        Color = 'AccentColor';
-    });
-
-    Instance:GetPropertyChangedSignal('Size'):Connect(function()
-        Ghost.Size = Instance.Size;
-    end);
-
     local dragging = false
     local mouseStartPos = Vector2.zero
     local frameStartPos = Vector2.zero
+
+    local outline = Drawing.new('Square')
+    outline.Visible = false
+    outline.Color = Library.AccentColor
+    outline.Thickness = 1
+    outline.Filled = false
 
     Instance.InputBegan:Connect(function(Input)
         if Input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -202,15 +181,12 @@ function Library:MakeDraggable(Instance, Cutoff)
             end
 
             dragging = true
-
-            -- Input.Position is in screen coords (no inset)
-            -- AbsolutePosition is in screen coords (no inset, starts from top of screen)
-local inset = GuiService:GetGuiInset()
-mouseStartPos = Vector2.new(Input.Position.X, Input.Position.Y)
+            mouseStartPos = Vector2.new(Input.Position.X, Input.Position.Y)
             frameStartPos = Vector2.new(Instance.AbsolutePosition.X, Instance.AbsolutePosition.Y)
-            Ghost.Size = Instance.Size
-            Ghost.Position = UDim2.fromOffset(frameStartPos.X, frameStartPos.Y)
-            Ghost.Visible = true
+
+            outline.Size = Vector2.new(Instance.AbsoluteSize.X, Instance.AbsoluteSize.Y)
+            outline.Position = Vector2.new(frameStartPos.X, frameStartPos.Y)
+            outline.Visible = true
         end
     end)
 
@@ -220,18 +196,29 @@ mouseStartPos = Vector2.new(Input.Position.X, Input.Position.Y)
                 Input.Position.X - mouseStartPos.X,
                 Input.Position.Y - mouseStartPos.Y
             )
-            Ghost.Position = UDim2.fromOffset(
+            outline.Position = Vector2.new(
                 frameStartPos.X + delta.X,
                 frameStartPos.Y + delta.Y
             )
+            outline.Color = Library.AccentColor
         end
     end))
 
-Library:GiveSignal(InputService.InputEnded:Connect(function(Input)
+    Library:GiveSignal(InputService.InputEnded:Connect(function(Input)
         if Input.UserInputType == Enum.UserInputType.MouseButton1 and dragging then
             dragging = false
-            Ghost.Visible = false
-            Instance.Position = UDim2.fromOffset(Ghost.Position.X.Offset, Ghost.Position.Y.Offset)
+            outline.Visible = false
+
+            local inset = game:GetService('GuiService'):GetGuiInset()
+            local delta = Vector2.new(
+                outline.Position.X - frameStartPos.X,
+                outline.Position.Y - frameStartPos.Y
+            )
+
+            Instance.Position = UDim2.fromOffset(
+                Instance.Position.X.Offset + delta.X,
+                Instance.Position.Y.Offset + delta.Y
+            )
         end
     end))
 end;
