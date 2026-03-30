@@ -164,11 +164,10 @@ end;
 function Library:MakeDraggable(Instance, Cutoff)
     Instance.Active = true;
 
-    local Ghost = Library:Create('Frame', {
-        BackgroundTransparency = 0.92;
-        BackgroundColor3 = Library.AccentColor;
+local Ghost = Library:Create('Frame', {
+        BackgroundTransparency = 1;
         BorderColor3 = Library.AccentColor;
-        BorderSizePixel = 1;
+        BorderSizePixel = 2;
         Size = Instance.Size;
         Position = Instance.Position;
         ZIndex = 999;
@@ -200,12 +199,12 @@ function Library:MakeDraggable(Instance, Cutoff)
             Ghost.Position = Instance.Position;
             Ghost.Visible = true;
 
-            while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
+while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
                 local NewPos = UDim2.new(
                     0,
-                    Mouse.X - ObjPos.X + (Instance.Size.X.Offset * Instance.AnchorPoint.X),
+                    Mouse.X - ObjPos.X,
                     0,
-                    Mouse.Y - ObjPos.Y + (Instance.Size.Y.Offset * Instance.AnchorPoint.Y)
+                    Mouse.Y - ObjPos.Y
                 );
 
                 Ghost.Position = NewPos;
