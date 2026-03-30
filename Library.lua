@@ -168,12 +168,6 @@ function Library:MakeDraggable(Instance, Cutoff)
     local mouseStartPos = Vector2.zero
     local frameStartPos = Vector2.zero
 
-    local outline = Drawing.new('Square')
-    outline.Visible = false
-    outline.Color = Library.AccentColor
-    outline.Thickness = 1
-    outline.Filled = false
-
     Instance.InputBegan:Connect(function(Input)
         if Input.UserInputType == Enum.UserInputType.MouseButton1 then
             if Input.Position.Y - Instance.AbsolutePosition.Y > (Cutoff or 40) then
@@ -183,11 +177,6 @@ function Library:MakeDraggable(Instance, Cutoff)
             dragging = true
             mouseStartPos = Vector2.new(Input.Position.X, Input.Position.Y)
             frameStartPos = Vector2.new(Instance.AbsolutePosition.X, Instance.AbsolutePosition.Y)
-
-local inset = game:GetService('GuiService'):GetGuiInset()
-            outline.Size = Vector2.new(Instance.AbsoluteSize.X, Instance.AbsoluteSize.Y)
-            outline.Position = Vector2.new(frameStartPos.X, frameStartPos.Y - inset.Y)
-            outline.Visible = true
         end
     end)
 
@@ -197,34 +186,20 @@ local inset = game:GetService('GuiService'):GetGuiInset()
                 Input.Position.X - mouseStartPos.X,
                 Input.Position.Y - mouseStartPos.Y
             )
-local inset = game:GetService('GuiService'):GetGuiInset()
-            outline.Position = Vector2.new(
-                frameStartPos.X + delta.X,
-                frameStartPos.Y - inset.Y + delta.Y
+            Instance.Position = UDim2.fromOffset(
+                Instance.Position.X.Offset + delta.X,
+                Instance.Position.Y.Offset + delta.Y
             )
-            outline.Color = Library.AccentColor
+            mouseStartPos = Vector2.new(Input.Position.X, Input.Position.Y)
         end
     end))
 
     Library:GiveSignal(InputService.InputEnded:Connect(function(Input)
         if Input.UserInputType == Enum.UserInputType.MouseButton1 and dragging then
             dragging = false
-            outline.Visible = false
-
-            local inset = game:GetService('GuiService'):GetGuiInset()
-            local delta = Vector2.new(
-                outline.Position.X - frameStartPos.X,
-                outline.Position.Y - frameStartPos.Y
-            )
-
-            Instance.Position = UDim2.fromOffset(
-                Instance.Position.X.Offset + delta.X,
-                Instance.Position.Y.Offset + delta.Y
-            )
         end
     end))
-end;
-function Library:AddToolTip(InfoStr, HoverInstance)
+end;function Library:AddToolTip(InfoStr, HoverInstance)
     local X, Y = Library:GetTextBounds(InfoStr, Library.Font, 14);
     local Tooltip = Library:Create('Frame', {
         BackgroundColor3 = Library.MainColor,
@@ -2087,6 +2062,19 @@ do
             Parent = SliderInner;
         });
 
+Library:Create('UIGradient', {
+            Color = ColorSequence.new({
+                ColorSequenceKeypoint.new(0, Color3.fromHSV(
+                    select(1, Color3.toHSV(Library.AccentColor)),
+                    math.max(0, select(2, Color3.toHSV(Library.AccentColor)) - 0.15),
+                    math.min(1, select(3, Color3.toHSV(Library.AccentColor)) + 0.15)
+                )),
+                ColorSequenceKeypoint.new(1, Library.AccentColor),
+            });
+            Rotation = 90;
+            Parent = Fill;
+        });
+
         Library:AddToRegistry(Fill, {
             BackgroundColor3 = 'AccentColor';
             BorderColor3 = 'AccentColorDark';
@@ -3105,7 +3093,7 @@ local GameLabel = Library:CreateLabel({
     local TabArea = Library:Create('Frame', {
         BackgroundTransparency = 1;
         Position = UDim2.new(0, 8, 0, 8);
-        Size = UDim2.new(1, -16, 0, 21);
+        Size = UDim2.new(1, -16, 0, 16);
         ZIndex = 1;
         Parent = MainSectionInner;
     });
