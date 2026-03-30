@@ -206,8 +206,8 @@ function Library:MakeDraggable(Instance, Cutoff)
             -- Input.Position is in screen coords (no inset)
             -- AbsolutePosition is in screen coords (no inset, starts from top of screen)
 local inset = GuiService:GetGuiInset()
-            mouseStartPos = Vector2.new(Input.Position.X, Input.Position.Y)
-            frameStartPos = Vector2.new(Instance.AbsolutePosition.X, Instance.AbsolutePosition.Y - inset.Y)
+mouseStartPos = Vector2.new(Input.Position.X, Input.Position.Y)
+            frameStartPos = Vector2.new(Instance.AbsolutePosition.X, Instance.AbsolutePosition.Y)
             Ghost.Size = Instance.Size
             Ghost.Position = UDim2.fromOffset(frameStartPos.X, frameStartPos.Y)
             Ghost.Visible = true
