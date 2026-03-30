@@ -185,7 +185,8 @@ function Library:MakeDraggable(Instance, Cutoff)
             frameStartPos = Vector2.new(Instance.AbsolutePosition.X, Instance.AbsolutePosition.Y)
 
             outline.Size = Vector2.new(Instance.AbsoluteSize.X, Instance.AbsoluteSize.Y)
-            outline.Position = Vector2.new(frameStartPos.X, frameStartPos.Y)
+            local inset = game:GetService('GuiService'):GetGuiInset()
+            outline.Position = Vector2.new(frameStartPos.X, frameStartPos.Y + inset.Y)
             outline.Visible = true
         end
     end)
@@ -196,9 +197,9 @@ function Library:MakeDraggable(Instance, Cutoff)
                 Input.Position.X - mouseStartPos.X,
                 Input.Position.Y - mouseStartPos.Y
             )
-            outline.Position = Vector2.new(
+outline.Position = Vector2.new(
                 frameStartPos.X + delta.X,
-                frameStartPos.Y + delta.Y
+                frameStartPos.Y + delta.Y + inset.Y
             )
             outline.Color = Library.AccentColor
         end
