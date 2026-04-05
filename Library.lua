@@ -7,10 +7,7 @@ local RunService = game:GetService('RunService')
 local TweenService = game:GetService('TweenService');
 local RenderStepped = RunService.RenderStepped;
 local LocalPlayer = Players.LocalPlayer;
-local Mouse = {
-    X = 0;
-    Y = 0;
-};
+local Mouse = LocalPlayer:GetMouse();
 
 local ProtectGui = (typeof(protectgui) == 'function' and protectgui) or (typeof(syn) == 'table' and syn.protect_gui) or (function() end);
 
@@ -67,12 +64,6 @@ table.insert(Library.Signals, RenderStepped:Connect(function(Delta)
 Library.CurrentRainbowColor = Color3.fromHSV(Hue, 0.8, 1);
     end
 end))
-
-RunService.RenderStepped:Connect(function()
-    local Location = InputService:GetMouseLocation();
-    Mouse.X = Location.X;
-    Mouse.Y = Location.Y;
-end);
 local function GetPlayersString()
     local PlayerList = Players:GetPlayers();
 
