@@ -11,11 +11,11 @@ local Mouse = {
     X = 0;
     Y = 0;
 };
-RunService.RenderStepped:Connect(function()
+Library:GiveSignal(RunService.RenderStepped:Connect(function()
     local Location = InputService:GetMouseLocation();
     Mouse.X = Location.X;
     Mouse.Y = Location.Y;
-end);
+end));
 
 local ProtectGui = protectgui or (syn and syn.protect_gui) or (function() end);
 
@@ -243,22 +243,20 @@ end;function Library:AddToolTip(InfoStr, HoverInstance)
 
     local IsHovering = false
 
-    HoverInstance.MouseEnter:Connect(function()
+HoverInstance.MouseEnter:Connect(function()
         if Library:MouseIsOverOpenedFrame() then
             return
         end
 
         IsHovering = true
-
-        Tooltip.Position = UDim2.fromOffset(Mouse.X + 15, Mouse.Y + 12)
         Tooltip.Visible = true
 
         while IsHovering do
             RunService.Heartbeat:Wait()
-            Tooltip.Position = UDim2.fromOffset(Mouse.X + 15, Mouse.Y + 12)
+            local Location = InputService:GetMouseLocation()
+            Tooltip.Position = UDim2.fromOffset(Location.X + 15, Location.Y + 12)
         end
     end)
-
     HoverInstance.MouseLeave:Connect(function()
         IsHovering = false
         Tooltip.Visible = false
@@ -1254,10 +1252,12 @@ DisplayFrame.MouseEnter:Connect(function()
             table.insert(ParentObj.Addons, KeyPicker)
         end
 
-        function KeyPicker:DoClick()
+function KeyPicker:DoClick()
             if ParentObj.Type == 'Toggle' and KeyPicker.SyncToggleState then
                 ParentObj:SetValue(not ParentObj.Value)
             end
+
+            KeyPicker.Toggled = not KeyPicker.Toggled;
 
             Library:SafeCallback(KeyPicker.Callback, KeyPicker.Toggled)
             Library:SafeCallback(KeyPicker.Clicked, KeyPicker.Toggled)
@@ -3623,12 +3623,13 @@ Container.Visible = true;
         return Tab;
     end;
 
-    local ModalElement = Library:Create('TextButton', {
+local ModalElement = Library:Create('TextButton', {
         BackgroundTransparency = 1;
-        Size = UDim2.new(0, 0, 0, 0);
-        Visible = true;
+        Size = UDim2.new(1, 0, 1, 0);
+        Visible = false;
         Text = '';
         Modal = false;
+        ZIndex = -1;
         Parent = ScreenGui;
     });
 
@@ -3646,7 +3647,9 @@ Container.Visible = true;
         Toggled = (not Toggled);
         ModalElement.Modal = Toggled;
 
-        if Toggled then
+if Toggled then
+            ModalElement.Visible = true;
+            ModalElement.Modal = true;
             -- A bit scuffed, but if we're going from not toggled -> toggled we want to show the frame immediately so that the fade is visible.
             Outer.Visible = true;
 
@@ -3724,9 +3727,14 @@ Container.Visible = true;
             end;
         end;
 
-        task.wait(FadeTime);
+task.wait(FadeTime);
 
         Outer.Visible = Toggled;
+
+        if not Toggled then
+            ModalElement.Visible = false;
+            ModalElement.Modal = false;
+        end;
 
         Fading = false;
     end
