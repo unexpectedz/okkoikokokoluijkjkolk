@@ -1247,8 +1247,6 @@ function KeyPicker:DoClick()
                 ParentObj:SetValue(not ParentObj.Value)
             end
 
-            KeyPicker.Toggled = not KeyPicker.Toggled;
-
             Library:SafeCallback(KeyPicker.Callback, KeyPicker.Toggled)
             Library:SafeCallback(KeyPicker.Clicked, KeyPicker.Toggled)
         end
@@ -1328,11 +1326,7 @@ Library:GiveSignal(InputService.InputBegan:Connect(function(Input)
                 if KeyPicker.Mode == 'Toggle' then
                     local IsParentToggle = ParentObj and ParentObj.Type == 'Toggle';
 
-                    local function TryFire()
-                        if IsParentToggle and not ParentObj.Value then
-                            return;
-                        end;
-
+local function TryFire()
                         if Key == 'MB1' or Key == 'MB2' then
                             if Key == 'MB1' and Input.UserInputType == Enum.UserInputType.MouseButton1
                             or Key == 'MB2' and Input.UserInputType == Enum.UserInputType.MouseButton2 then
