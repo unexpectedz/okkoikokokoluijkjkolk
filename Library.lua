@@ -11,11 +11,11 @@ local Mouse = {
     X = 0;
     Y = 0;
 };
-Library:GiveSignal(RunService.RenderStepped:Connect(function()
+RunService.RenderStepped:Connect(function()
     local Location = InputService:GetMouseLocation();
     Mouse.X = Location.X;
     Mouse.Y = Location.Y;
-end));
+end);
 
 local ProtectGui = protectgui or (syn and syn.protect_gui) or (function() end);
 
