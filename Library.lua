@@ -1321,29 +1321,21 @@ PickOuter.MouseEnter:Connect(function()
 
 Library:GiveSignal(InputService.InputBegan:Connect(function(Input)
             if (not Picking) then
-                local Key = KeyPicker.Value;
-
                 if KeyPicker.Mode == 'Toggle' then
-                    local IsParentToggle = ParentObj and ParentObj.Type == 'Toggle';
+                    local Key = KeyPicker.Value;
 
-local function TryFire()
-                        if Key == 'MB1' or Key == 'MB2' then
-                            if Key == 'MB1' and Input.UserInputType == Enum.UserInputType.MouseButton1
-                            or Key == 'MB2' and Input.UserInputType == Enum.UserInputType.MouseButton2 then
-                                KeyPicker:DoClick()
-                            end;
-                        elseif Input.UserInputType == Enum.UserInputType.Keyboard then
-                            if Input.KeyCode.Name == Key then
-                                KeyPicker:DoClick()
-                            end;
+                    if Key == 'MB1' or Key == 'MB2' then
+                        if Key == 'MB1' and Input.UserInputType == Enum.UserInputType.MouseButton1
+                        or Key == 'MB2' and Input.UserInputType == Enum.UserInputType.MouseButton2 then
+                            KeyPicker.Toggled = not KeyPicker.Toggled
+                            KeyPicker:DoClick()
+                        end;
+                    elseif Input.UserInputType == Enum.UserInputType.Keyboard then
+                        if Input.KeyCode.Name == Key then
+                            KeyPicker.Toggled = not KeyPicker.Toggled;
+                            KeyPicker:DoClick()
                         end;
                     end;
-
-                    TryFire();
-                elseif KeyPicker.Mode == 'Hold' then
-                    -- Hold mode is handled by GetState(), nothing to do here
-                elseif KeyPicker.Mode == 'Always' then
-                    -- Always mode is always on, nothing to do here
                 end;
 
                 KeyPicker:Update();
