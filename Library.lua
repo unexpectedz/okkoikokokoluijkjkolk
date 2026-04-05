@@ -12,7 +12,7 @@ local Mouse = {
     Y = 0;
 };
 
-local ProtectGui = protectgui or (syn and syn.protect_gui) or (function() end);
+local ProtectGui = (typeof(protectgui) == 'function' and protectgui) or (typeof(syn) == 'table' and syn.protect_gui) or (function() end);
 
 local ScreenGui = Instance.new('ScreenGui');
 ProtectGui(ScreenGui);
@@ -50,7 +50,6 @@ local Library = {
 };
 
 local RainbowStep = 0
-local Hue = 0
 
 table.insert(Library.Signals, RenderStepped:Connect(function(Delta)
     RainbowStep = RainbowStep + Delta
