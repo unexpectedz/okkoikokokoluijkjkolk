@@ -7,7 +7,15 @@ local RunService = game:GetService('RunService')
 local TweenService = game:GetService('TweenService');
 local RenderStepped = RunService.RenderStepped;
 local LocalPlayer = Players.LocalPlayer;
-local Mouse = LocalPlayer:GetMouse();
+local Mouse = {
+    X = 0;
+    Y = 0;
+};
+RunService.RenderStepped:Connect(function()
+    local Location = InputService:GetMouseLocation();
+    Mouse.X = Location.X;
+    Mouse.Y = Location.Y;
+end);
 
 local ProtectGui = protectgui or (syn and syn.protect_gui) or (function() end);
 
@@ -1323,20 +1331,24 @@ PickOuter.MouseEnter:Connect(function()
             end;
         end);
 
-        Library:GiveSignal(InputService.InputBegan:Connect(function(Input)
+Library:GiveSignal(InputService.InputBegan:Connect(function(Input)
             if (not Picking) then
                 if KeyPicker.Mode == 'Toggle' then
                     local Key = KeyPicker.Value;
+                    local ParentToggleOn = (ParentObj and ParentObj.Type == 'Toggle') and ParentObj.Value or false;
+
+                    if not ParentToggleOn then
+                        KeyPicker:Update();
+                        return;
+                    end;
 
                     if Key == 'MB1' or Key == 'MB2' then
                         if Key == 'MB1' and Input.UserInputType == Enum.UserInputType.MouseButton1
                         or Key == 'MB2' and Input.UserInputType == Enum.UserInputType.MouseButton2 then
-                            KeyPicker.Toggled = not KeyPicker.Toggled
                             KeyPicker:DoClick()
                         end;
                     elseif Input.UserInputType == Enum.UserInputType.Keyboard then
                         if Input.KeyCode.Name == Key then
-                            KeyPicker.Toggled = not KeyPicker.Toggled;
                             KeyPicker:DoClick()
                         end;
                     end;
@@ -2826,12 +2838,12 @@ do
 
 
 
-    local KeybindOuter = Library:Create('Frame', {
+local KeybindOuter = Library:Create('Frame', {
         AnchorPoint = Vector2.new(0, 0.5);
         BorderColor3 = Color3.new(0, 0, 0);
         Position = UDim2.new(0, 10, 0.5, 0);
         Size = UDim2.new(0, 210, 0, 20);
-        Visible = false;
+        Visible = true;
         ZIndex = 100;
         Parent = ScreenGui;
     });
