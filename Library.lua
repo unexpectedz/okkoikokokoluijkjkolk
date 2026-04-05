@@ -11,11 +11,11 @@ local Mouse = {
     X = 0;
     Y = 0;
 };
-RunService.RenderStepped:Connect(function()
+Library:GiveSignal(RunService.RenderStepped:Connect(function()
     local Location = InputService:GetMouseLocation();
     Mouse.X = Location.X;
     Mouse.Y = Location.Y;
-end);
+end));
 
 local ProtectGui = protectgui or (syn and syn.protect_gui) or (function() end);
 
@@ -1333,25 +1333,33 @@ PickOuter.MouseEnter:Connect(function()
 
 Library:GiveSignal(InputService.InputBegan:Connect(function(Input)
             if (not Picking) then
+                local Key = KeyPicker.Value;
+
                 if KeyPicker.Mode == 'Toggle' then
-                    local Key = KeyPicker.Value;
-                    local ParentToggleOn = (ParentObj and ParentObj.Type == 'Toggle') and ParentObj.Value or false;
+                    local IsParentToggle = ParentObj and ParentObj.Type == 'Toggle';
 
-                    if not ParentToggleOn then
-                        KeyPicker:Update();
-                        return;
+                    local function TryFire()
+                        if IsParentToggle and not ParentObj.Value then
+                            return;
+                        end;
+
+                        if Key == 'MB1' or Key == 'MB2' then
+                            if Key == 'MB1' and Input.UserInputType == Enum.UserInputType.MouseButton1
+                            or Key == 'MB2' and Input.UserInputType == Enum.UserInputType.MouseButton2 then
+                                KeyPicker:DoClick()
+                            end;
+                        elseif Input.UserInputType == Enum.UserInputType.Keyboard then
+                            if Input.KeyCode.Name == Key then
+                                KeyPicker:DoClick()
+                            end;
+                        end;
                     end;
 
-                    if Key == 'MB1' or Key == 'MB2' then
-                        if Key == 'MB1' and Input.UserInputType == Enum.UserInputType.MouseButton1
-                        or Key == 'MB2' and Input.UserInputType == Enum.UserInputType.MouseButton2 then
-                            KeyPicker:DoClick()
-                        end;
-                    elseif Input.UserInputType == Enum.UserInputType.Keyboard then
-                        if Input.KeyCode.Name == Key then
-                            KeyPicker:DoClick()
-                        end;
-                    end;
+                    TryFire();
+                elseif KeyPicker.Mode == 'Hold' then
+                    -- Hold mode is handled by GetState(), nothing to do here
+                elseif KeyPicker.Mode == 'Always' then
+                    -- Always mode is always on, nothing to do here
                 end;
 
                 KeyPicker:Update();
