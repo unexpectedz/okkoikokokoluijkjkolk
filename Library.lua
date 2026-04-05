@@ -11,11 +11,6 @@ local Mouse = {
     X = 0;
     Y = 0;
 };
-Library:GiveSignal(RunService.RenderStepped:Connect(function()
-    local Location = InputService:GetMouseLocation();
-    Mouse.X = Location.X;
-    Mouse.Y = Location.Y;
-end));
 
 local ProtectGui = protectgui or (syn and syn.protect_gui) or (function() end);
 
@@ -70,10 +65,15 @@ table.insert(Library.Signals, RenderStepped:Connect(function(Delta)
         end;
 
         Library.CurrentRainbowHue = Hue;
-        Library.CurrentRainbowColor = Color3.fromHSV(Hue, 0.8, 1);
+Library.CurrentRainbowColor = Color3.fromHSV(Hue, 0.8, 1);
     end
 end))
 
+RunService.RenderStepped:Connect(function()
+    local Location = InputService:GetMouseLocation();
+    Mouse.X = Location.X;
+    Mouse.Y = Location.Y;
+end);
 local function GetPlayersString()
     local PlayerList = Players:GetPlayers();
 
