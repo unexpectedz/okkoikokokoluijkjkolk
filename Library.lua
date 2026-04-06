@@ -3718,6 +3718,7 @@ local TabContainer = Library:Create('Frame', {
         BorderColor3 = Library.OutlineColor;
         Position = UDim2.new(0, 8, 0, 31);
         Size = UDim2.new(1, -16, 1, -39);
+        ClipsDescendants = true;
         ZIndex = 2;
         Parent = MainSectionInner;
     });
@@ -3808,10 +3809,13 @@ local LeftSide = Library:Create('ScrollingFrame', {
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = '';
             TopImage = '';
-            ScrollBarThickness = 0;
+            ScrollBarThickness = 3;
+            ScrollBarImageColor3 = Library.AccentColor;
             ZIndex = 2;
             Parent = TabFrame;
         });
+
+        Library:AddToRegistry(LeftSide, { ScrollBarImageColor3 = 'AccentColor' });
 
 local RightSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
@@ -3821,16 +3825,19 @@ local RightSide = Library:Create('ScrollingFrame', {
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = '';
             TopImage = '';
-            ScrollBarThickness = 0;
+            ScrollBarThickness = 3;
+            ScrollBarImageColor3 = Library.AccentColor;
             ZIndex = 2;
             Parent = TabFrame;
         });
 
-        Library:Create('UIListLayout', {
+        Library:AddToRegistry(RightSide, { ScrollBarImageColor3 = 'AccentColor' });
+
+Library:Create('UIListLayout', {
             Padding = UDim.new(0, 8);
             FillDirection = Enum.FillDirection.Vertical;
             SortOrder = Enum.SortOrder.LayoutOrder;
-            HorizontalAlignment = Enum.HorizontalAlignment.Center;
+            HorizontalAlignment = Enum.HorizontalAlignment.Left;
             Parent = LeftSide;
         });
 
@@ -3838,7 +3845,7 @@ local RightSide = Library:Create('ScrollingFrame', {
             Padding = UDim.new(0, 8);
             FillDirection = Enum.FillDirection.Vertical;
             SortOrder = Enum.SortOrder.LayoutOrder;
-            HorizontalAlignment = Enum.HorizontalAlignment.Center;
+            HorizontalAlignment = Enum.HorizontalAlignment.Left;
             Parent = RightSide;
         });
 
