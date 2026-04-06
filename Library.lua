@@ -3859,14 +3859,14 @@ function Tab:ShowTab()
             TabAccentLine.BackgroundTransparency = 1;
 
 Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'BackgroundColor';
-            TabButton.BackgroundColor3 = Color3.fromRGB(24, 24, 24);
+            TabButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50);
 
             TweenService:Create(TabAccentLine, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                 BackgroundTransparency = 0
             }):Play();
 
             TweenService:Create(TabButton, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                BackgroundColor3 = Color3.fromRGB(24, 24, 24)
+                BackgroundColor3 = Color3.fromRGB(50, 50, 50)
             }):Play();
         end;
 
