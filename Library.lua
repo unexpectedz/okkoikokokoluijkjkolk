@@ -3808,10 +3808,13 @@ local LeftSide = Library:Create('ScrollingFrame', {
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = '';
             TopImage = '';
-            ScrollBarThickness = 0;
+            ScrollBarThickness = 3;
+            ScrollBarImageColor3 = Library.AccentColor;
             ZIndex = 2;
             Parent = TabFrame;
         });
+
+        Library:AddToRegistry(LeftSide, { ScrollBarImageColor3 = 'AccentColor' });
 
 local RightSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
@@ -3821,11 +3824,13 @@ local RightSide = Library:Create('ScrollingFrame', {
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = '';
             TopImage = '';
-            ScrollBarThickness = 0;
+            ScrollBarThickness = 3;
+            ScrollBarImageColor3 = Library.AccentColor;
             ZIndex = 2;
             Parent = TabFrame;
         });
 
+        Library:AddToRegistry(Righ
         Library:Create('UIListLayout', {
             Padding = UDim.new(0, 8);
             FillDirection = Enum.FillDirection.Vertical;
@@ -3842,9 +3847,10 @@ local RightSide = Library:Create('ScrollingFrame', {
             Parent = RightSide;
         });
 
-        for _, Side in next, { LeftSide, RightSide } do
-            Side:WaitForChild('UIListLayout'):GetPropertyChangedSignal('AbsoluteContentSize'):Connect(function()
-                Side.CanvasSize = UDim2.fromOffset(0, Side.UIListLayout.AbsoluteContentSize.Y);
+for _, Side in next, { LeftSide, RightSide } do
+            local Layout = Side:WaitForChild('UIListLayout');
+            Layout:GetPropertyChangedSignal('AbsoluteContentSize'):Connect(function()
+                Side.CanvasSize = UDim2.fromOffset(0, Layout.AbsoluteContentSize.Y);
             end);
         end;
 
