@@ -198,7 +198,59 @@ function Library:MakeDraggable(Instance, Cutoff)
         end
     end))
 end;function Library:AddToolTip(InfoStr, HoverInstance)
-    -- Tooltips disabled, function kept for compatibility
+    local X, Y = Library:GetTextBounds(InfoStr, Library.Font, 14);
+    local Tooltip = Library:Create('Frame', {
+        BackgroundColor3 = Library.MainColor,
+        BorderColor3 = Library.OutlineColor,
+
+        Size = UDim2.fromOffset(X + 5, Y + 4),
+        ZIndex = 100,
+        Parent = Library.ScreenGui,
+
+        Visible = false,
+    })
+
+    local Label = Library:CreateLabel({
+        Position = UDim2.fromOffset(3, 1),
+        Size = UDim2.fromOffset(X, Y);
+        TextSize = 14;
+        Text = InfoStr,
+        TextColor3 = Library.FontColor,
+        TextXAlignment = Enum.TextXAlignment.Left;
+        ZIndex = Tooltip.ZIndex + 1,
+
+        Parent = Tooltip;
+    });
+
+    Library:AddToRegistry(Tooltip, {
+        BackgroundColor3 = 'MainColor';
+        BorderColor3 = 'OutlineColor';
+    });
+
+    Library:AddToRegistry(Label, {
+        TextColor3 = 'FontColor',
+    });
+
+    local IsHovering = false
+
+HoverInstance.MouseEnter:Connect(function()
+        if Library:MouseIsOverOpenedFrame() then
+            return
+        end
+
+        IsHovering = true
+        Tooltip.Visible = true
+
+        while IsHovering do
+            RunService.Heartbeat:Wait()
+            local Location = InputService:GetMouseLocation()
+            Tooltip.Position = UDim2.fromOffset(Location.X + 15, Location.Y + 12)
+        end
+    end)
+    HoverInstance.MouseLeave:Connect(function()
+        IsHovering = false
+        Tooltip.Visible = false
+    end)
 end
 
 function Library:OnHighlight(HighlightInstance, Instance, Properties, PropertiesDefault)
@@ -748,22 +800,9 @@ do
                 Library:Notify('Copied hex code to clipboard!', 2)
             end)
 
-ContextMenu:AddOption('Copy RGB', function()
+            ContextMenu:AddOption('Copy RGB', function()
                 pcall(setclipboard, table.concat({ math.floor(ColorPicker.Value.R * 255), math.floor(ColorPicker.Value.G * 255), math.floor(ColorPicker.Value.B * 255) }, ', '))
                 Library:Notify('Copied RGB values to clipboard!', 2)
-            end)
-
-            ContextMenu:AddOption('Match color', function()
-                -- Find all color pickers whose DisplayFrame shares the same parent (same row/label)
-                local MyParent = DisplayFrame.Parent
-                for _, Opt in next, Options do
-                    if Opt.Type == 'ColorPicker' and Opt ~= ColorPicker then
-                        if Opt.DisplayFrame and Opt.DisplayFrame.Parent == MyParent then
-                            Opt:SetValueRGB(ColorPicker.Value, Opt.Transparency)
-                        end
-                    end
-                end
-                Library:Notify('Matched colors on this row!', 2)
             end)
 
         end
@@ -1942,7 +1981,7 @@ do
         end
 
         Toggle:Display();
-        Groupbox:AddBlank(Info.BlankSize or 4);
+        Groupbox:AddBlank(Info.BlankSize or 5 + 2);
         Groupbox:Resize();
 
         Toggle.TextLabel = ToggleLabel;
@@ -2169,7 +2208,7 @@ local Fill = Library:Create('Frame', {
         end);
 
         Slider:Display();
-        Groupbox:AddBlank(Info.BlankSize or 4);
+        Groupbox:AddBlank(Info.BlankSize or 6);
         Groupbox:Resize();
 
         Options[Idx] = Slider;
@@ -2262,13 +2301,12 @@ local Fill = Library:Create('Frame', {
             Parent = DropdownInner;
         });
 
-local DropdownArrow = Library:CreateLabel({
+        local DropdownArrow = Library:Create('ImageLabel', {
             AnchorPoint = Vector2.new(0, 0.5);
             BackgroundTransparency = 1;
             Position = UDim2.new(1, -16, 0.5, 0);
-            Size = UDim2.new(0, 12, 0, 14);
-            Text = '>';
-            TextSize = 12;
+            Size = UDim2.new(0, 12, 0, 12);
+            Image = 'http://www.roblox.com/asset/?id=6282522798';
             ZIndex = 8;
             Parent = DropdownInner;
         });
@@ -2516,17 +2554,17 @@ local DropdownArrow = Library:CreateLabel({
             Dropdown:BuildDropdownList();
         end;
 
-function Dropdown:OpenDropdown()
-                ListOuter.Visible = true;
-                Library.OpenedFrames[ListOuter] = true;
-                DropdownArrow.Text = 'v';
-            end;
+        function Dropdown:OpenDropdown()
+            ListOuter.Visible = true;
+            Library.OpenedFrames[ListOuter] = true;
+            DropdownArrow.Rotation = 180;
+        end;
 
-            function Dropdown:CloseDropdown()
-                ListOuter.Visible = false;
-                Library.OpenedFrames[ListOuter] = nil;
-                DropdownArrow.Text = '>';
-            end;
+        function Dropdown:CloseDropdown()
+            ListOuter.Visible = false;
+            Library.OpenedFrames[ListOuter] = nil;
+            DropdownArrow.Rotation = 0;
+        end;
 
         function Dropdown:OnChanged(Func)
             Dropdown.Changed = Func;
@@ -2617,7 +2655,7 @@ function Dropdown:OpenDropdown()
             Dropdown:Display();
         end
 
-        Groupbox:AddBlank(Info.BlankSize or 3);
+        Groupbox:AddBlank(Info.BlankSize or 5);
         Groupbox:Resize();
 
         Options[Idx] = Dropdown;
@@ -2982,13 +3020,12 @@ function Funcs:AddDualDropdown(Idx1, Info1, Idx2, Info2)
                 Parent = DropdownInner;
             });
 
-local DropdownArrow = Library:CreateLabel({
+            local DropdownArrow = Library:Create('ImageLabel', {
                 AnchorPoint = Vector2.new(0, 0.5);
                 BackgroundTransparency = 1;
                 Position = UDim2.new(1, -16, 0.5, 0);
-                Size = UDim2.new(0, 12, 0, 14);
-                Text = '>';
-                TextSize = 12;
+                Size = UDim2.new(0, 12, 0, 12);
+                Image = 'http://www.roblox.com/asset/?id=6282522798';
                 ZIndex = 8;
                 Parent = DropdownInner;
             });
@@ -3228,17 +3265,17 @@ local DropdownArrow = Library:CreateLabel({
                 Dropdown:BuildDropdownList();
             end;
 
-function Dropdown:OpenDropdown()
-            ListOuter.Visible = true;
-            Library.OpenedFrames[ListOuter] = true;
-            DropdownArrow.Text = 'v';
-        end;
+            function Dropdown:OpenDropdown()
+                ListOuter.Visible = true;
+                Library.OpenedFrames[ListOuter] = true;
+                DropdownArrow.Rotation = 180;
+            end;
 
-        function Dropdown:CloseDropdown()
-            ListOuter.Visible = false;
-            Library.OpenedFrames[ListOuter] = nil;
-            DropdownArrow.Text = '>';
-        end;
+            function Dropdown:CloseDropdown()
+                ListOuter.Visible = false;
+                Library.OpenedFrames[ListOuter] = nil;
+                DropdownArrow.Rotation = 0;
+            end;
 
             function Dropdown:OnChanged(Func)
                 Dropdown.Changed = Func;
@@ -3611,7 +3648,7 @@ function Library:CreateWindow(...)
     if type(Config.MenuFadeTime) ~= 'number' then Config.MenuFadeTime = 0.2 end
 
     if typeof(Config.Position) ~= 'UDim2' then Config.Position = UDim2.fromOffset(175, 50) end
-    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(560, 690) end
+    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(560, 650) end
 
     if Config.Center then
         Config.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -3698,10 +3735,10 @@ local GameLabel = Library:CreateLabel({
         BackgroundColor3 = 'BackgroundColor';
     });
 
-local TabArea = Library:Create('Frame', {
+    local TabArea = Library:Create('Frame', {
         BackgroundTransparency = 1;
-        Position = UDim2.new(0, 8, 0, 7);
-        Size = UDim2.new(1, -16, 0, 18);
+        Position = UDim2.new(0, 8, 0, 8);
+        Size = UDim2.new(1, -16, 0, 16);
         ZIndex = 1;
         Parent = MainSectionInner;
     });
@@ -3713,11 +3750,11 @@ local TabArea = Library:Create('Frame', {
         Parent = TabArea;
     });
 
-local TabContainer = Library:Create('Frame', {
+    local TabContainer = Library:Create('Frame', {
         BackgroundColor3 = Library.MainColor;
         BorderColor3 = Library.OutlineColor;
-        Position = UDim2.new(0, 8, 0, 31);
-        Size = UDim2.new(1, -16, 1, -39);
+        Position = UDim2.new(0, 8, 0, 30);
+        Size = UDim2.new(1, -16, 1, -38);
         ZIndex = 2;
         Parent = MainSectionInner;
     });
@@ -3740,10 +3777,10 @@ local TabContainer = Library:Create('Frame', {
 
         local TabButtonWidth = Library:GetTextBounds(Name, Library.Font, 16);
 
-local TabButton = Library:Create('Frame', {
+        local TabButton = Library:Create('Frame', {
             BackgroundColor3 = Library.BackgroundColor;
             BorderColor3 = Library.OutlineColor;
-            Size = UDim2.new(0, TabButtonWidth + 12 + 4, 1, 0);
+            Size = UDim2.new(0, TabButtonWidth + 8 + 4, 1, 0);
             ZIndex = 1;
             Parent = TabArea;
         });
@@ -3753,11 +3790,10 @@ local TabButton = Library:Create('Frame', {
             BorderColor3 = 'OutlineColor';
         });
 
-local TabButtonLabel = Library:CreateLabel({
+        local TabButtonLabel = Library:CreateLabel({
             Position = UDim2.new(0, 0, 0, 0);
-            Size = UDim2.new(1, 0, 1, 0);
+            Size = UDim2.new(1, 0, 1, -1);
             Text = Name;
-            TextYAlignment = Enum.TextYAlignment.Center;
             ZIndex = 1;
             Parent = TabButton;
         });
@@ -3804,7 +3840,7 @@ local LeftSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
             Position = UDim2.new(0, 8 - 1, 0, 8 - 1);
-            Size = UDim2.new(0.5, -12 + 2, 0, 580 + 2);
+            Size = UDim2.new(0.5, -12 + 2, 0, 535 + 2);
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = '';
             TopImage = '';
@@ -3813,11 +3849,11 @@ local LeftSide = Library:Create('ScrollingFrame', {
             Parent = TabFrame;
         });
 
-local RightSide = Library:Create('ScrollingFrame', {
+        local RightSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
             Position = UDim2.new(0.5, 4 + 1, 0, 8 - 1);
-            Size = UDim2.new(0.5, -12 + 2, 0, 580 + 2);
+            Size = UDim2.new(0.5, -12 + 2, 0, 535 + 2);
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = '';
             TopImage = '';
@@ -3854,34 +3890,30 @@ function Tab:ShowTab()
             end;
 
             Blocker.BackgroundTransparency = 0;
+            TabButton.BackgroundColor3 = Library.MainColor;
+            Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'MainColor';
             TabFrame.Visible = true;
             TabFrame.Position = UDim2.new(-0.04, 0, 0, 0);
             TabAccentLine.BackgroundTransparency = 1;
-
-Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'BackgroundColor';
-            TabButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30);
 
             TweenService:Create(TabAccentLine, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                 BackgroundTransparency = 0
             }):Play();
 
-            TweenService:Create(TabButton, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+            TweenService:Create(TabFrame, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Position = UDim2.new(0, 0, 0, 0)
             }):Play();
         end;
 
         function Tab:HideTab()
             Blocker.BackgroundTransparency = 1;
             TabAccentLine.BackgroundTransparency = 1;
+            TabButton.BackgroundColor3 = Library.BackgroundColor;
             Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'BackgroundColor';
-
-            TweenService:Create(TabButton, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                BackgroundColor3 = Library.BackgroundColor
-            }):Play();
-
             TabFrame.Visible = false;
             TabFrame.Position = UDim2.new(0, 0, 0, 0);
         end;
+
         function Tab:SetLayoutOrder(Position)
             TabButton.LayoutOrder = Position;
             TabListLayout:ApplyLayout();
