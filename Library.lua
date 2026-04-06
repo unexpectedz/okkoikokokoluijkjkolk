@@ -3752,8 +3752,8 @@ local GameLabel = Library:CreateLabel({
 
 local TabArea = Library:Create('Frame', {
         BackgroundTransparency = 1;
-        Position = UDim2.new(0, 8, 0, 5);
-        Size = UDim2.new(1, -16, 0, 28);
+        Position = UDim2.new(0, 8, 0, 7);
+        Size = UDim2.new(1, -16, 0, 18);
         ZIndex = 1;
         Parent = MainSectionInner;
     });
@@ -3768,8 +3768,8 @@ local TabArea = Library:Create('Frame', {
 local TabContainer = Library:Create('Frame', {
         BackgroundColor3 = Library.MainColor;
         BorderColor3 = Library.OutlineColor;
-        Position = UDim2.new(0, 8, 0, 39);
-        Size = UDim2.new(1, -16, 1, -47);
+        Position = UDim2.new(0, 8, 0, 31);
+        Size = UDim2.new(1, -16, 1, -39);
         ZIndex = 2;
         Parent = MainSectionInner;
     });
@@ -3906,18 +3906,20 @@ function Tab:ShowTab()
             end;
 
             Blocker.BackgroundTransparency = 0;
-            TabButton.BackgroundColor3 = Library:GetDarkerColor(Library.MainColor);
-            Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'MainColor';
             TabFrame.Visible = true;
             TabFrame.Position = UDim2.new(-0.04, 0, 0, 0);
             TabAccentLine.BackgroundTransparency = 1;
+
+            -- Set registry to use a darker key so UpdateColorsUsingRegistry keeps it dark
+            Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'BackgroundColor';
+            TabButton.BackgroundColor3 = Color3.fromRGB(14, 14, 14);
 
             TweenService:Create(TabAccentLine, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                 BackgroundTransparency = 0
             }):Play();
 
             TweenService:Create(TabButton, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                BackgroundColor3 = Library:GetDarkerColor(Library.MainColor)
+                BackgroundColor3 = Color3.fromRGB(14, 14, 14)
             }):Play();
 
             TweenService:Create(TabFrame, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
@@ -3928,7 +3930,6 @@ function Tab:ShowTab()
         function Tab:HideTab()
             Blocker.BackgroundTransparency = 1;
             TabAccentLine.BackgroundTransparency = 1;
-            TabButton.BackgroundColor3 = Library.BackgroundColor;
             Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'BackgroundColor';
 
             TweenService:Create(TabButton, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
@@ -3938,7 +3939,6 @@ function Tab:ShowTab()
             TabFrame.Visible = false;
             TabFrame.Position = UDim2.new(0, 0, 0, 0);
         end;
-
         function Tab:SetLayoutOrder(Position)
             TabButton.LayoutOrder = Position;
             TabListLayout:ApplyLayout();
