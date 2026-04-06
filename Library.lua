@@ -3826,7 +3826,6 @@ local RightSide = Library:Create('ScrollingFrame', {
             Parent = TabFrame;
         });
 
-        Library:AddToRegistry(Righ
         Library:Create('UIListLayout', {
             Padding = UDim.new(0, 8);
             FillDirection = Enum.FillDirection.Vertical;
