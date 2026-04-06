@@ -800,9 +800,22 @@ do
                 Library:Notify('Copied hex code to clipboard!', 2)
             end)
 
-            ContextMenu:AddOption('Copy RGB', function()
+ContextMenu:AddOption('Copy RGB', function()
                 pcall(setclipboard, table.concat({ math.floor(ColorPicker.Value.R * 255), math.floor(ColorPicker.Value.G * 255), math.floor(ColorPicker.Value.B * 255) }, ', '))
                 Library:Notify('Copied RGB values to clipboard!', 2)
+            end)
+
+            ContextMenu:AddOption('Match color', function()
+                -- Find all color pickers whose DisplayFrame shares the same parent (same row/label)
+                local MyParent = DisplayFrame.Parent
+                for _, Opt in next, Options do
+                    if Opt.Type == 'ColorPicker' and Opt ~= ColorPicker then
+                        if Opt.DisplayFrame and Opt.DisplayFrame.Parent == MyParent then
+                            Opt:SetValueRGB(ColorPicker.Value, Opt.Transparency)
+                        end
+                    end
+                end
+                Library:Notify('Matched colors on this row!', 2)
             end)
 
         end
@@ -2301,12 +2314,13 @@ local Fill = Library:Create('Frame', {
             Parent = DropdownInner;
         });
 
-        local DropdownArrow = Library:Create('ImageLabel', {
+local DropdownArrow = Library:CreateLabel({
             AnchorPoint = Vector2.new(0, 0.5);
             BackgroundTransparency = 1;
             Position = UDim2.new(1, -16, 0.5, 0);
-            Size = UDim2.new(0, 12, 0, 12);
-            Image = 'http://www.roblox.com/asset/?id=6282522798';
+            Size = UDim2.new(0, 12, 0, 14);
+            Text = '>';
+            TextSize = 12;
             ZIndex = 8;
             Parent = DropdownInner;
         });
@@ -2554,17 +2568,17 @@ local Fill = Library:Create('Frame', {
             Dropdown:BuildDropdownList();
         end;
 
-        function Dropdown:OpenDropdown()
-            ListOuter.Visible = true;
-            Library.OpenedFrames[ListOuter] = true;
-            DropdownArrow.Rotation = 180;
-        end;
+function Dropdown:OpenDropdown()
+                ListOuter.Visible = true;
+                Library.OpenedFrames[ListOuter] = true;
+                DropdownArrow.Text = 'v';
+            end;
 
-        function Dropdown:CloseDropdown()
-            ListOuter.Visible = false;
-            Library.OpenedFrames[ListOuter] = nil;
-            DropdownArrow.Rotation = 0;
-        end;
+            function Dropdown:CloseDropdown()
+                ListOuter.Visible = false;
+                Library.OpenedFrames[ListOuter] = nil;
+                DropdownArrow.Text = '>';
+            end;
 
         function Dropdown:OnChanged(Func)
             Dropdown.Changed = Func;
@@ -3020,12 +3034,13 @@ function Funcs:AddDualDropdown(Idx1, Info1, Idx2, Info2)
                 Parent = DropdownInner;
             });
 
-            local DropdownArrow = Library:Create('ImageLabel', {
+local DropdownArrow = Library:CreateLabel({
                 AnchorPoint = Vector2.new(0, 0.5);
                 BackgroundTransparency = 1;
                 Position = UDim2.new(1, -16, 0.5, 0);
-                Size = UDim2.new(0, 12, 0, 12);
-                Image = 'http://www.roblox.com/asset/?id=6282522798';
+                Size = UDim2.new(0, 12, 0, 14);
+                Text = '>';
+                TextSize = 12;
                 ZIndex = 8;
                 Parent = DropdownInner;
             });
@@ -3265,17 +3280,17 @@ function Funcs:AddDualDropdown(Idx1, Info1, Idx2, Info2)
                 Dropdown:BuildDropdownList();
             end;
 
-            function Dropdown:OpenDropdown()
-                ListOuter.Visible = true;
-                Library.OpenedFrames[ListOuter] = true;
-                DropdownArrow.Rotation = 180;
-            end;
+function Dropdown:OpenDropdown()
+            ListOuter.Visible = true;
+            Library.OpenedFrames[ListOuter] = true;
+            DropdownArrow.Text = 'v';
+        end;
 
-            function Dropdown:CloseDropdown()
-                ListOuter.Visible = false;
-                Library.OpenedFrames[ListOuter] = nil;
-                DropdownArrow.Rotation = 0;
-            end;
+        function Dropdown:CloseDropdown()
+            ListOuter.Visible = false;
+            Library.OpenedFrames[ListOuter] = nil;
+            DropdownArrow.Text = '>';
+        end;
 
             function Dropdown:OnChanged(Func)
                 Dropdown.Changed = Func;
@@ -3648,7 +3663,7 @@ function Library:CreateWindow(...)
     if type(Config.MenuFadeTime) ~= 'number' then Config.MenuFadeTime = 0.2 end
 
     if typeof(Config.Position) ~= 'UDim2' then Config.Position = UDim2.fromOffset(175, 50) end
-    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(560, 780) end
+    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(560, 690) end
 
     if Config.Center then
         Config.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -3737,8 +3752,8 @@ local GameLabel = Library:CreateLabel({
 
 local TabArea = Library:Create('Frame', {
         BackgroundTransparency = 1;
-        Position = UDim2.new(0, 8, 0, 6);
-        Size = UDim2.new(1, -16, 0, 22);
+        Position = UDim2.new(0, 8, 0, 5);
+        Size = UDim2.new(1, -16, 0, 28);
         ZIndex = 1;
         Parent = MainSectionInner;
     });
@@ -3753,8 +3768,8 @@ local TabArea = Library:Create('Frame', {
 local TabContainer = Library:Create('Frame', {
         BackgroundColor3 = Library.MainColor;
         BorderColor3 = Library.OutlineColor;
-        Position = UDim2.new(0, 8, 0, 34);
-        Size = UDim2.new(1, -16, 1, -42);
+        Position = UDim2.new(0, 8, 0, 39);
+        Size = UDim2.new(1, -16, 1, -47);
         ZIndex = 2;
         Parent = MainSectionInner;
     });
@@ -3841,7 +3856,7 @@ local LeftSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
             Position = UDim2.new(0, 8 - 1, 0, 8 - 1);
-            Size = UDim2.new(0.5, -12 + 2, 0, 660 + 2);
+            Size = UDim2.new(0.5, -12 + 2, 0, 580 + 2);
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = '';
             TopImage = '';
@@ -3854,7 +3869,7 @@ local RightSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
             Position = UDim2.new(0.5, 4 + 1, 0, 8 - 1);
-            Size = UDim2.new(0.5, -12 + 2, 0, 660 + 2);
+            Size = UDim2.new(0.5, -12 + 2, 0, 580 + 2);
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = '';
             TopImage = '';
@@ -3891,7 +3906,7 @@ function Tab:ShowTab()
             end;
 
             Blocker.BackgroundTransparency = 0;
-            TabButton.BackgroundColor3 = Library.MainColor;
+            TabButton.BackgroundColor3 = Library:GetDarkerColor(Library.MainColor);
             Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'MainColor';
             TabFrame.Visible = true;
             TabFrame.Position = UDim2.new(-0.04, 0, 0, 0);
@@ -3899,6 +3914,10 @@ function Tab:ShowTab()
 
             TweenService:Create(TabAccentLine, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                 BackgroundTransparency = 0
+            }):Play();
+
+            TweenService:Create(TabButton, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                BackgroundColor3 = Library:GetDarkerColor(Library.MainColor)
             }):Play();
 
             TweenService:Create(TabFrame, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
@@ -3911,6 +3930,11 @@ function Tab:ShowTab()
             TabAccentLine.BackgroundTransparency = 1;
             TabButton.BackgroundColor3 = Library.BackgroundColor;
             Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'BackgroundColor';
+
+            TweenService:Create(TabButton, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                BackgroundColor3 = Library.BackgroundColor
+            }):Play();
+
             TabFrame.Visible = false;
             TabFrame.Position = UDim2.new(0, 0, 0, 0);
         end;
