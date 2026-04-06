@@ -3670,7 +3670,7 @@ local GameLabel = Library:CreateLabel({
     });
     Library:AddToRegistry(GameLabel, { TextColor3 = 'AccentColor' });
 
-local MainSectionOuter = Library:Create('Frame', {
+    local MainSectionOuter = Library:Create('Frame', {
         BackgroundColor3 = Library.BackgroundColor;
         BorderColor3 = Library.OutlineColor;
         Position = UDim2.new(0, 8, 0, 25);
@@ -3803,8 +3803,8 @@ local TabAccentLine = Library:Create('Frame', {
 local LeftSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            Position = UDim2.new(0, 6, 0, 6);
-            Size = UDim2.new(0.5, -9, 1, -12);
+            Position = UDim2.new(0, 8 - 1, 0, 8 - 1);
+            Size = UDim2.new(0.5, -12 + 2, 0, 580 + 2);
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = '';
             TopImage = '';
@@ -3816,8 +3816,8 @@ local LeftSide = Library:Create('ScrollingFrame', {
 local RightSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            Position = UDim2.new(0.5, 3, 0, 6);
-            Size = UDim2.new(0.5, -9, 1, -12);
+            Position = UDim2.new(0.5, 4 + 1, 0, 8 - 1);
+            Size = UDim2.new(0.5, -12 + 2, 0, 580 + 2);
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = '';
             TopImage = '';
@@ -3859,14 +3859,14 @@ function Tab:ShowTab()
             TabAccentLine.BackgroundTransparency = 1;
 
 Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'BackgroundColor';
-            TabButton.BackgroundColor3 = Color3.fromRGB(24, 24, 24);
+            TabButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30);
 
             TweenService:Create(TabAccentLine, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                 BackgroundTransparency = 0
             }):Play();
 
             TweenService:Create(TabButton, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-                BackgroundColor3 = Color3.fromRGB(24, 24, 24)
+                BackgroundColor3 = Color3.fromRGB(30, 30, 30)
             }):Play();
         end;
 
