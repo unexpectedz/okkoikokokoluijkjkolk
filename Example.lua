@@ -152,6 +152,40 @@ LeftGroupBox:AddDivider()
     HideMax will only display the value instead of the value & max value of the slider
     Compact will do the same thing
 ]]
+
+LeftGroupBox:AddDualSlider(
+    'MyDualSliderA', {
+        Text = 'Min',
+        Default = 10,
+        Min = 0,
+        Max = 100,
+        Rounding = 0,
+        Suffix = '%',
+        Callback = function(Value)
+            print('[cb] DualSlider A changed:', Value)
+        end
+    },
+    'MyDualSliderB', {
+        Text = 'Max',
+        Default = 80,
+        Min = 0,
+        Max = 100,
+        Rounding = 0,
+        Suffix = '%',
+        Callback = function(Value)
+            print('[cb] DualSlider B changed:', Value)
+        end
+    }
+)
+
+Options.MyDualSliderA:OnChanged(function()
+    print('DualSlider A value:', Options.MyDualSliderA.Value)
+end)
+
+Options.MyDualSliderB:OnChanged(function()
+    print('DualSlider B value:', Options.MyDualSliderB.Value)
+end)
+
 LeftGroupBox:AddSlider('MySlider', {
     Text = 'This is my slider!',
     Default = 0,
