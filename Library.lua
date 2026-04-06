@@ -3804,34 +3804,28 @@ local TabAccentLine = Library:Create('Frame', {
 local LeftSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            Position = UDim2.new(0, 7, 0, 7);
-            Size = UDim2.new(0.5, -11, 1, -14);
+            Position = UDim2.new(0, 8 - 1, 0, 8 - 1);
+            Size = UDim2.new(0.5, -12 + 2, 0, 507 + 2);
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = '';
             TopImage = '';
-            ScrollBarThickness = 3;
-            ScrollBarImageColor3 = Library.AccentColor;
+            ScrollBarThickness = 0;
             ZIndex = 2;
             Parent = TabFrame;
         });
 
-        Library:AddToRegistry(LeftSide, { ScrollBarImageColor3 = 'AccentColor' });
-
-local RightSide = Library:Create('ScrollingFrame', {
+        local RightSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            Position = UDim2.new(0.5, 4, 0, 7);
-            Size = UDim2.new(0.5, -11, 1, -14);
+            Position = UDim2.new(0.5, 4 + 1, 0, 8 - 1);
+            Size = UDim2.new(0.5, -12 + 2, 0, 507 + 2);
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = '';
             TopImage = '';
-            ScrollBarThickness = 3;
-            ScrollBarImageColor3 = Library.AccentColor;
+            ScrollBarThickness = 0;
             ZIndex = 2;
             Parent = TabFrame;
         });
-
-        Library:AddToRegistry(RightSide, { ScrollBarImageColor3 = 'AccentColor' });
 
 Library:Create('UIListLayout', {
             Padding = UDim.new(0, 8);
