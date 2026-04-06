@@ -159,12 +159,50 @@ function Library:CreateLabel(Properties, IsHud)
     return Library:Create(_Instance, Properties);
 end;
 
-function Library:MakeDraggable(Instance, Cutoff)
+function Library:MakeDraggable(Instance, Cutoff, NoGhost)
     Instance.Active = true;
 
     local dragging = false
     local mouseStartPos = Vector2.zero
     local frameStartPos = Vector2.zero
+
+    -- Ghost outline frame, only created if NoGhost is not set
+    local Ghost;
+    if not NoGhost then
+        Ghost = Library:Create('Frame', {
+            BackgroundTransparency = 1;
+            BorderSizePixel = 0;
+            Visible = false;
+            ZIndex = 999;
+            Parent = ScreenGui;
+        });
+
+        -- Four border lines (top, bottom, left, right)
+        local Thickness = 2;
+
+        local function MakeLine(props)
+            return Library:Create('Frame', {
+                BackgroundColor3 = Library.AccentColor;
+                BorderSizePixel = 0;
+                ZIndex = 1000;
+                Parent = Ghost;
+                BackgroundTransparency = 0;
+                Size = props.Size;
+                Position = props.Position;
+            });
+        end
+
+        -- We store references so we can update accent color reactively
+        local Top    = MakeLine({ Size = UDim2.new(1, 0, 0, Thickness); Position = UDim2.new(0, 0, 0, 0); });
+        local Bottom = MakeLine({ Size = UDim2.new(1, 0, 0, Thickness); Position = UDim2.new(0, 0, 1, -Thickness); });
+        local Left   = MakeLine({ Size = UDim2.new(0, Thickness, 1, 0); Position = UDim2.new(0, 0, 0, 0); });
+        local Right  = MakeLine({ Size = UDim2.new(0, Thickness, 1, 0); Position = UDim2.new(1, -Thickness, 0, 0); });
+
+        Library:AddToRegistry(Top,    { BackgroundColor3 = 'AccentColor' });
+        Library:AddToRegistry(Bottom, { BackgroundColor3 = 'AccentColor' });
+        Library:AddToRegistry(Left,   { BackgroundColor3 = 'AccentColor' });
+        Library:AddToRegistry(Right,  { BackgroundColor3 = 'AccentColor' });
+    end
 
     Instance.InputBegan:Connect(function(Input)
         if Input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -175,6 +213,12 @@ function Library:MakeDraggable(Instance, Cutoff)
             dragging = true
             mouseStartPos = Vector2.new(Input.Position.X, Input.Position.Y)
             frameStartPos = Vector2.new(Instance.AbsolutePosition.X, Instance.AbsolutePosition.Y)
+
+            if Ghost then
+                Ghost.Size = UDim2.fromOffset(Instance.AbsoluteSize.X, Instance.AbsoluteSize.Y);
+                Ghost.Position = UDim2.fromOffset(frameStartPos.X, frameStartPos.Y);
+                Ghost.Visible = true;
+            end
         end
     end)
 
@@ -184,20 +228,36 @@ function Library:MakeDraggable(Instance, Cutoff)
                 Input.Position.X - mouseStartPos.X,
                 Input.Position.Y - mouseStartPos.Y
             )
-            Instance.Position = UDim2.fromOffset(
-                Instance.Position.X.Offset + delta.X,
-                Instance.Position.Y.Offset + delta.Y
-            )
-            mouseStartPos = Vector2.new(Input.Position.X, Input.Position.Y)
+
+            if Ghost then
+                -- Only move the ghost, not the real frame
+                Ghost.Position = UDim2.fromOffset(
+                    frameStartPos.X + delta.X,
+                    frameStartPos.Y + delta.Y
+                )
+            else
+                Instance.Position = UDim2.fromOffset(
+                    Instance.Position.X.Offset + delta.X,
+                    Instance.Position.Y.Offset + delta.Y
+                )
+                mouseStartPos = Vector2.new(Input.Position.X, Input.Position.Y)
+            end
         end
     end))
 
     Library:GiveSignal(InputService.InputEnded:Connect(function(Input)
         if Input.UserInputType == Enum.UserInputType.MouseButton1 and dragging then
             dragging = false
+
+            if Ghost then
+                -- Snap the real frame to where the ghost ended up
+                Instance.Position = Ghost.Position;
+                Ghost.Visible = false;
+            end
         end
     end))
-end;function Library:AddToolTip(InfoStr, HoverInstance)
+end;
+function Library:AddToolTip(InfoStr, HoverInstance)
     local X, Y = Library:GetTextBounds(InfoStr, Library.Font, 14);
     local Tooltip = Library:Create('Frame', {
         BackgroundColor3 = Library.MainColor,
@@ -3455,8 +3515,7 @@ do
 
     Library.Watermark = WatermarkOuter;
     Library.WatermarkText = WatermarkLabel;
-    Library:MakeDraggable(Library.Watermark);
-
+Library:MakeDraggable(Library.Watermark, nil, true);
 
 
 local KeybindOuter = Library:Create('Frame', {
@@ -3526,7 +3585,7 @@ local KeybindOuter = Library:Create('Frame', {
 
     Library.KeybindFrame = KeybindOuter;
     Library.KeybindContainer = KeybindContainer;
-    Library:MakeDraggable(KeybindOuter);
+Library:MakeDraggable(KeybindOuter, nil, true);
 end;
 
 function Library:SetWatermarkVisibility(Bool)
